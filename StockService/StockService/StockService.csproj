@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -7,48 +7,26 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="obj\Debug\net6.0\.NETCoreApp,Version=v6.0.AssemblyAttributes.cs" />
-    <Compile Include="obj\Debug\net6.0\StockService.AssemblyInfo.cs" />
-    <Compile Include="obj\Debug\net6.0\StockService.GlobalUsings.g.cs" />
-    <Compile Include="obj\Release\net6.0\.NETCoreApp,Version=v6.0.AssemblyAttributes.cs" />
-    <Compile Include="obj\Release\net6.0\StockService.AssemblyInfo.cs" />
-    <Compile Include="obj\Release\net6.0\StockService.GlobalUsings.g.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="obj\project.assets.json" />
-    <Content Include="obj\StockService.csproj.nuget.dgspec.json" />
+    <Compile Remove="bin\**" />
+    <Compile Remove="obj\**" />
+    <Content Remove="bin\**" />
+    <Content Remove="obj\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="bin\**" />
+    <None Remove="obj\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="bin\Debug\net6.0\" />
-    <Folder Include="bin\Release\net6.0\" />
-    <Folder Include="obj\Debug\net6.0\refint\" />
-    <Folder Include="obj\Debug\net6.0\ref\" />
-    <Folder Include="obj\Debug\net6.0\staticwebassets\" />
-    <Folder Include="obj\Release\net6.0\refint\" />
-    <Folder Include="obj\Release\net6.0\ref\" />
-    <Folder Include="obj\Release\net6.0\staticwebassets\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="obj\Debug\net6.0\StockService.AssemblyInfoInputs.cache" />
-    <None Include="obj\Debug\net6.0\StockService.assets.cache" />
-    <None Include="obj\Debug\net6.0\StockService.csproj.AssemblyReference.cache" />
-    <None Include="obj\Debug\net6.0\StockService.GeneratedMSBuildEditorConfig.editorconfig" />
-    <None Include="obj\project.nuget.cache" />
-    <None Include="obj\Release\net6.0\StockService.AssemblyInfoInputs.cache" />
-    <None Include="obj\Release\net6.0\StockService.assets.cache" />
-    <None Include="obj\Release\net6.0\StockService.csproj.AssemblyReference.cache" />
-    <None Include="obj\Release\net6.0\StockService.GeneratedMSBuildEditorConfig.editorconfig" />
-    <None Include="obj\StockService.csproj.nuget.g.props" />
-    <None Include="obj\StockService.csproj.nuget.g.targets" />
   </ItemGroup>
 
 </Project>
