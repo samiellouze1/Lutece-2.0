@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace StockService.Models
 {
-    public class User
+    public class User:IEntityBase
     {
         [Key]
         [Required]

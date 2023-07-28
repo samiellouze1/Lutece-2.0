@@ -21,12 +21,14 @@ namespace StockService.Data
             builder.Entity<StockUser>().HasOne(su => su.Stock).WithMany(s => s.StockUsers).OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Order>().HasOne(o => o.OriginalOrder).WithMany(oo => oo.Orders).OnDelete(DeleteBehavior.Cascade);
             builder.Entity<OriginalOrder>().HasOne(oo => oo.User).WithMany(u => u.OriginalOrders).OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Order>().HasOne(o=>o.Stock).WithMany(u => u.Orders).OnDelete(DeleteBehavior.Cascade);
             #endregion
 
             #region doubles
             builder.Entity<OriginalOrder>().Property(oo => oo.Price).HasPrecision(6, 2);
             builder.Entity<User>().Property(u=>u.Balance).HasPrecision(6, 2);
             builder.Entity<Order>().Property(o=>o.ExecutedPrice).HasPrecision(6, 2);
+            builder.Entity<Stock>().Property(s=>s.AveragePrice).HasPrecision(6, 2);
             #endregion
 
             base.OnModelCreating(builder);

@@ -9,7 +9,9 @@ namespace StockService.Models
         public int Id { get; set; }
         [Required] 
         public string Name { get; set; }
+        [Required]
+        public double AveragePrice { get; set; }
         public virtual List<StockUser> StockUsers { get; set; } = new List<StockUser>();
-
+        public virtual List<Order> Orders { get; set; } = new List<Order>();
     }
 }
