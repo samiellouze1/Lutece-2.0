@@ -12,7 +12,7 @@ namespace StockService.DTOs
         [Required]
         public double Price { get; set; }
         [Required]
-        public TypeEnum Type { get; set; }
+        public OrderTypeEnum Type { get; set; }
         [Required]
         public DateTime DepositDate { get; set; }
     }

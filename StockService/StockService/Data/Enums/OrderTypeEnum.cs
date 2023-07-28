@@ -1,6 +1,6 @@
 ﻿namespace StockService.Data.Enums
 {
-    public enum TypeEnum
+    public enum OrderTypeEnum
     {
         Buy,
         Sell

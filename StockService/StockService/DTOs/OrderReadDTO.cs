@@ -9,7 +9,7 @@ namespace StockService.DTOs
         public int DepositorId { get; set; }
         public int Quantity { get; set; }
         public double Price { get; set; }
-        public TypeEnum Type { get; set; }
+        public OrderTypeEnum Type { get; set; }
         public DateTime DepositDate { get; set; }
     }
 }

@@ -9,14 +9,11 @@ namespace StockService.Models
         [Required]
         public int Id { get; set; }
         [Required]
-        public int DepositorId { get; set; }
-        [Required]
         public int Quantity { get; set; }
         [Required]
-        public double Price { get; set; }
-        [Required]
-        public TypeEnum Type { get; set; }
-        [Required]
-        public DateTime DepositDate { get; set; }
+        public OrderStatusEnum OrderStatus { get; set; }
+        public Nullable<double> ExecutedPrice { get; set; }
+        public Nullable<DateTime> DateExecution { get; set; }
+        public virtual OriginalOrder OriginalOrder { get; set; }
     }
 }
