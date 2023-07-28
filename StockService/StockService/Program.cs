@@ -14,7 +14,13 @@ builder.Services.AddSwaggerGen();
 
 Console.WriteLine("Using Local Db");
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("localdb")));
+
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();
+builder.Services.AddScoped<IOriginalOrderRepo, OriginalOrderRepo>();
+builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IStockUserRepo, StockUserRepo>();
+builder.Services.AddScoped<IStockRepo, StockRepo>();
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 

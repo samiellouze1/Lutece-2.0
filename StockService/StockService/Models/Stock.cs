@@ -2,7 +2,7 @@
 
 namespace StockService.Models
 {
-    public class Stock
+    public class Stock:IEntityBase
     {
         [Key] 
         [Required]

@@ -17,7 +17,10 @@ namespace StockService.Data
         protected override void OnModelCreating (ModelBuilder builder)
         {
             #region relationships
-            builder.Entity<StockUser>().HasOne(su => su.User).WithMany(u => u.StockUsers);
+            builder.Entity<StockUser>().HasOne(su => su.User).WithMany(u => u.StockUsers).OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<StockUser>().HasOne(su => su.Stock).WithMany(s => s.StockUsers).OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Order>().HasOne(o => o.OriginalOrder).WithMany(oo => oo.Orders).OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<OriginalOrder>().HasOne(oo => oo.User).WithMany(u => u.OriginalOrders).OnDelete(DeleteBehavior.Cascade);
             #endregion
 
             #region doubles

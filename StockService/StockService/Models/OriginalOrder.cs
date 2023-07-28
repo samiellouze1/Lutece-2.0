@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace StockService.Models
 {
-    public class OriginalOrder
+    public class OriginalOrder:IEntityBase
     {
         [Key]
         [Required]

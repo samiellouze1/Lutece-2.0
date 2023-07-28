@@ -15,6 +15,6 @@ namespace StockService.Models
         [Required]
         public double Balance { get; set; }
         public virtual List<StockUser> StockUsers { get; set; } = new List<StockUser>();
-        public virtual List<OriginalOrder> OriginalOrders { get; set; } = new List<OriginalOrder>;
+        public virtual List<OriginalOrder> OriginalOrders { get; set; } = new List<OriginalOrder>();
     }
 }
