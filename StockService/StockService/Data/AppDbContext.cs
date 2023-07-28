@@ -8,7 +8,7 @@ namespace StockService.Data
         public DbSet<User> Users { get; set; }
         public DbSet<OriginalOrder> OriginalOrders { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<StockUser> StockUsers { get; set; }
+        public DbSet<StockUnit> StockUnits { get; set; }
         public DbSet<Stock> Stocks { get; set; }
         public AppDbContext (DbContextOptions<AppDbContext> opt): base(opt)
         {
@@ -17,8 +17,8 @@ namespace StockService.Data
         protected override void OnModelCreating (ModelBuilder builder)
         {
             #region relationships
-            builder.Entity<StockUser>().HasOne(su => su.User).WithMany(u => u.StockUsers).OnDelete(DeleteBehavior.Cascade);
-            builder.Entity<StockUser>().HasOne(su => su.Stock).WithMany(s => s.StockUsers).OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<StockUnit>().HasOne(su => su.User).WithMany(u => u.StockUnits).OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<StockUnit>().HasOne(su => su.Stock).WithMany(s => s.StockUnits).OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Order>().HasOne(o => o.OriginalOrder).WithMany(oo => oo.Orders).OnDelete(DeleteBehavior.Cascade);
             builder.Entity<OriginalOrder>().HasOne(oo => oo.User).WithMany(u => u.OriginalOrders).OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Order>().HasOne(o=>o.Stock).WithMany(u => u.Orders).OnDelete(DeleteBehavior.Cascade);

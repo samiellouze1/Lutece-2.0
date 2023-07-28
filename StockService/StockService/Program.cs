@@ -18,7 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(builder.Conf
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();
 builder.Services.AddScoped<IOriginalOrderRepo, OriginalOrderRepo>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
-builder.Services.AddScoped<IStockUserRepo, StockUserRepo>();
+builder.Services.AddScoped<IStockUnitRepo, StockUnitRepo>();
 builder.Services.AddScoped<IStockRepo, StockRepo>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

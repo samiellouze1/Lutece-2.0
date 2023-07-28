@@ -18,9 +18,9 @@ namespace StockService.Data.Repo
 
         }
     }
-    public class StockUserRepo : EntityBaseRepository<StockUser>, IStockUserRepo
+    public class StockUnitRepo : EntityBaseRepository<StockUnit>, IStockUnitRepo
     {
-        public StockUserRepo(AppDbContext context) : base(context)
+        public StockUnitRepo(AppDbContext context) : base(context)
         {
 
         }

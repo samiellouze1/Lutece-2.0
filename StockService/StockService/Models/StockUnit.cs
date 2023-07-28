@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace StockService.Models
 {
-    public class StockUser : IEntityBase
+    public class StockUnit : IEntityBase
     {
         [Key]
         [Required]
@@ -11,7 +11,7 @@ namespace StockService.Models
         public virtual User User { get; set; }
         public virtual Stock Stock { get;set; }
         [Required]
-        public StockUserStatusEnum StockUserStatus { get; set; }
+        public StockUnitStatusEnum StockUnitStatus { get; set; }
         [Required]
         public DateTime DateBought { get; set; }
     }

@@ -11,7 +11,7 @@ namespace StockService.Data.IRepo
     public interface IUserRepo : IEntityBaseRepository<User>
     {
     }
-    public interface IStockUserRepo : IEntityBaseRepository<StockUser>
+    public interface IStockUnitRepo : IEntityBaseRepository<StockUnit>
     {
     }
     public interface IStockRepo : IEntityBaseRepository<Stock>

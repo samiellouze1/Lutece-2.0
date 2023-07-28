@@ -12,8 +12,8 @@ using StockService.Data;
 namespace StockService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230728184042_second")]
-    partial class second
+    [Migration("20230728193834_first")]
+    partial class first
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,9 +49,14 @@ namespace StockService.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<int>("StockId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OriginalOrderId");
+
+                    b.HasIndex("StockId");
 
                     b.ToTable("Orders");
                 });
@@ -98,6 +103,10 @@ namespace StockService.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<double>("AveragePrice")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("float(6)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -107,7 +116,7 @@ namespace StockService.Migrations
                     b.ToTable("Stocks");
                 });
 
-            modelBuilder.Entity("StockService.Models.StockUser", b =>
+            modelBuilder.Entity("StockService.Models.StockUnit", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -121,7 +130,7 @@ namespace StockService.Migrations
                     b.Property<int>("StockId")
                         .HasColumnType("int");
 
-                    b.Property<int>("StockUserStatus")
+                    b.Property<int>("StockUnitStatus")
                         .HasColumnType("int");
 
                     b.Property<int>("UserId")
@@ -133,7 +142,7 @@ namespace StockService.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("StockUsers");
+                    b.ToTable("StockUnits");
                 });
 
             modelBuilder.Entity("StockService.Models.User", b =>
@@ -168,7 +177,15 @@ namespace StockService.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("StockService.Models.Stock", "Stock")
+                        .WithMany("Orders")
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("OriginalOrder");
+
+                    b.Navigation("Stock");
                 });
 
             modelBuilder.Entity("StockService.Models.OriginalOrder", b =>
@@ -182,16 +199,16 @@ namespace StockService.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("StockService.Models.StockUser", b =>
+            modelBuilder.Entity("StockService.Models.StockUnit", b =>
                 {
                     b.HasOne("StockService.Models.Stock", "Stock")
-                        .WithMany("StockUsers")
+                        .WithMany("StockUnits")
                         .HasForeignKey("StockId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StockService.Models.User", "User")
-                        .WithMany("StockUsers")
+                        .WithMany("StockUnits")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -208,14 +225,16 @@ namespace StockService.Migrations
 
             modelBuilder.Entity("StockService.Models.Stock", b =>
                 {
-                    b.Navigation("StockUsers");
+                    b.Navigation("Orders");
+
+                    b.Navigation("StockUnits");
                 });
 
             modelBuilder.Entity("StockService.Models.User", b =>
                 {
                     b.Navigation("OriginalOrders");
 
-                    b.Navigation("StockUsers");
+                    b.Navigation("StockUnits");
                 });
 #pragma warning restore 612, 618
         }

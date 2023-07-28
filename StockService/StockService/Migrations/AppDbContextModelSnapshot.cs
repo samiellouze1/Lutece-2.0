@@ -113,7 +113,7 @@ namespace StockService.Migrations
                     b.ToTable("Stocks");
                 });
 
-            modelBuilder.Entity("StockService.Models.StockUser", b =>
+            modelBuilder.Entity("StockService.Models.StockUnit", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,7 +127,7 @@ namespace StockService.Migrations
                     b.Property<int>("StockId")
                         .HasColumnType("int");
 
-                    b.Property<int>("StockUserStatus")
+                    b.Property<int>("StockUnitStatus")
                         .HasColumnType("int");
 
                     b.Property<int>("UserId")
@@ -139,7 +139,7 @@ namespace StockService.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("StockUsers");
+                    b.ToTable("StockUnits");
                 });
 
             modelBuilder.Entity("StockService.Models.User", b =>
@@ -196,16 +196,16 @@ namespace StockService.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("StockService.Models.StockUser", b =>
+            modelBuilder.Entity("StockService.Models.StockUnit", b =>
                 {
                     b.HasOne("StockService.Models.Stock", "Stock")
-                        .WithMany("StockUsers")
+                        .WithMany("StockUnits")
                         .HasForeignKey("StockId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StockService.Models.User", "User")
-                        .WithMany("StockUsers")
+                        .WithMany("StockUnits")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -224,14 +224,14 @@ namespace StockService.Migrations
                 {
                     b.Navigation("Orders");
 
-                    b.Navigation("StockUsers");
+                    b.Navigation("StockUnits");
                 });
 
             modelBuilder.Entity("StockService.Models.User", b =>
                 {
                     b.Navigation("OriginalOrders");
 
-                    b.Navigation("StockUsers");
+                    b.Navigation("StockUnits");
                 });
 #pragma warning restore 612, 618
         }

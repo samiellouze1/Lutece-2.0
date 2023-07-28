@@ -17,7 +17,8 @@ namespace StockService.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AveragePrice = table.Column<double>(type: "float(6)", precision: 6, scale: 2, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,27 +65,27 @@ namespace StockService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StockUsers",
+                name: "StockUnits",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     StockId = table.Column<int>(type: "int", nullable: false),
-                    StockUserStatus = table.Column<int>(type: "int", nullable: false),
+                    StockUnitStatus = table.Column<int>(type: "int", nullable: false),
                     DateBought = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StockUsers", x => x.Id);
+                    table.PrimaryKey("PK_StockUnits", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StockUsers_Stocks_StockId",
+                        name: "FK_StockUnits_Stocks_StockId",
                         column: x => x.StockId,
                         principalTable: "Stocks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StockUsers_Users_UserId",
+                        name: "FK_StockUnits_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -101,7 +102,8 @@ namespace StockService.Migrations
                     OrderStatus = table.Column<int>(type: "int", nullable: false),
                     ExecutedPrice = table.Column<double>(type: "float(6)", precision: 6, scale: 2, nullable: true),
                     DateExecution = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    OriginalOrderId = table.Column<int>(type: "int", nullable: false)
+                    OriginalOrderId = table.Column<int>(type: "int", nullable: false),
+                    StockId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -112,6 +114,12 @@ namespace StockService.Migrations
                         principalTable: "OriginalOrders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Orders_Stocks_StockId",
+                        column: x => x.StockId,
+                        principalTable: "Stocks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -120,18 +128,23 @@ namespace StockService.Migrations
                 column: "OriginalOrderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Orders_StockId",
+                table: "Orders",
+                column: "StockId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OriginalOrders_UserId",
                 table: "OriginalOrders",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockUsers_StockId",
-                table: "StockUsers",
+                name: "IX_StockUnits_StockId",
+                table: "StockUnits",
                 column: "StockId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockUsers_UserId",
-                table: "StockUsers",
+                name: "IX_StockUnits_UserId",
+                table: "StockUnits",
                 column: "UserId");
         }
 
@@ -142,7 +155,7 @@ namespace StockService.Migrations
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "StockUsers");
+                name: "StockUnits");
 
             migrationBuilder.DropTable(
                 name: "OriginalOrders");

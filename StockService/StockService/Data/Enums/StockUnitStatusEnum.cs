@@ -1,6 +1,6 @@
 ﻿namespace StockService.Data.Enums
 {
-    public enum StockUserStatusEnum
+    public enum StockUnitStatusEnum
     {
         InStock,
         InMarket

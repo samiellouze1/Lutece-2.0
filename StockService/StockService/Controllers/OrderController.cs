@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using StockService.Data.IRepo;
-using StockService.DTOs;
 using StockService.Models;
 
 namespace StockService.Controllers
@@ -13,17 +12,17 @@ namespace StockService.Controllers
         private readonly IOrderRepo _orderRepo;
         private readonly IOriginalOrderRepo _originalOrderRepo;
         private readonly IUserRepo _userRepo;
-        private readonly IStockUserRepo _stockUserRepo;
+        private readonly IStockUnitRepo _StockUnitRepo;
         private readonly IStockRepo _stockRepo;
 
         private readonly IMapper _mapper;
 
-        public OrderController(IMapper mapper, IOrderRepo orderRepo, IOriginalOrderRepo originalOrderRepo, IUserRepo userRepo, IStockUserRepo stockUserRepo, IStockRepo stockRepo)
+        public OrderController(IMapper mapper, IOrderRepo orderRepo, IOriginalOrderRepo originalOrderRepo, IUserRepo userRepo, IStockUnitRepo StockUnitRepo, IStockRepo stockRepo)
         {
             _orderRepo = orderRepo;
             _originalOrderRepo = originalOrderRepo;
             _userRepo = userRepo;
-            _stockUserRepo = stockUserRepo;
+            _StockUnitRepo = StockUnitRepo;
             _stockRepo = stockRepo;
             _mapper = mapper;
         }

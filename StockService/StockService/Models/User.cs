@@ -14,7 +14,7 @@ namespace StockService.Models
         public string Email { get; set; }
         [Required]
         public double Balance { get; set; }
-        public virtual List<StockUser> StockUsers { get; set; } = new List<StockUser>();
+        public virtual List<StockUnit> StockUnits { get; set; } = new List<StockUnit>();
         public virtual List<OriginalOrder> OriginalOrders { get; set; } = new List<OriginalOrder>();
     }
 }
