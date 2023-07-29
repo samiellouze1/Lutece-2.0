@@ -5,11 +5,11 @@ namespace StockService.Data
 {
     public class AppDbContext:DbContext
     {
-        public DbSet<User> Users { get; set; }
-        public DbSet<OriginalOrder> OriginalOrders { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<StockUnit> StockUnits { get; set; }
-        public DbSet<Stock> Stocks { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<OriginalOrder> OriginalOrders { get; set; }
+        public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<StockUnit> StockUnits { get; set; }
+        public virtual DbSet<Stock> Stocks { get; set; }
         public AppDbContext (DbContextOptions<AppDbContext> opt): base(opt)
         {
 
