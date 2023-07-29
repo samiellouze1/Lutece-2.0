@@ -15,6 +15,5 @@ namespace StockService.Models
         public Nullable<double> ExecutedPrice { get; set; }
         public Nullable<DateTime> DateExecution { get; set; }
         public virtual OriginalOrder OriginalOrder { get; set; }
-        public virtual Stock Stock { get; set; }    
     }
 }

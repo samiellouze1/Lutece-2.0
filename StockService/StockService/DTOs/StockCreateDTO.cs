@@ -1,17 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using StockService.Data.Enums;
+using StockService.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace StockService.Models
+namespace StockService.DTOs
 {
-    public class Stock:IEntityBase
+    public class StockCreateDTO
     {
-        [Key] 
-        [Required]
         public int Id { get; set; }
-        [Required] 
         public string Name { get; set; }
-        [Required]
         public double AveragePrice { get; set; }
-        [Required]
         public int Quantity { get; set; }
         public virtual List<StockUnit> StockUnits { get; set; } = new List<StockUnit>();
         public virtual List<OriginalOrder> OriginalOrders { get; set; } = new List<OriginalOrder>();

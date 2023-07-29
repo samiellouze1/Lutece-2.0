@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using StockService.Data.IRepo;
+using StockService.DTOs;
 using StockService.Models;
 
 namespace StockService.Controllers
@@ -26,34 +27,34 @@ namespace StockService.Controllers
             _stockRepo = stockRepo;
             _mapper = mapper;
         }
-        //[HttpGet]
-        //public ActionResult<IEnumerable<OrderReadDTO>> GetOrders()
-        //{
-        //    Console.WriteLine("--------- Getting Orders --------");
-        //    var orderitem = _repository.GetAll();
-        //    return Ok(_mapper.Map<IEnumerable<OrderReadDTO>>(orderitem));
-        //}
-        //[HttpGet("{id}",Name = "GetOrderById")]
-        //public ActionResult<OrderReadDTO> GetOrderById (int id)
-        //{
-        //    var orderitem = _repository.GetOrderById(id);
-        //    if (orderitem != null)
-        //    {
-        //        return Ok(_mapper.Map<OrderReadDTO>(orderitem));
-        //    }
-        //    else
-        //    {
-        //        return NotFound();
-        //    }
-        //}
-        //[HttpPost]
-        //public async Task<ActionResult<OrderReadDTO>> CreateOrder (OrderCreateDTO ordercreatedto)
-        //{
-        //    var orderModel = _mapper.Map<Order>(ordercreatedto);
-        //    _repository.CreateOrder(orderModel);
-        //    _repository.SaveChanges();
-        //    var orderreaddto = _mapper.Map<OrderReadDTO>(orderModel);
-        //    return CreatedAtRoute(nameof(GetOrderById), new { id = orderreaddto.Id }, orderreaddto);
-        //}
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<OriginalOrderReadDTO>>> GetOriginalOrders()
+        {
+            Console.WriteLine("--------- Getting Original Orders --------");
+            var originalorders = await _originalOrderRepo.GetAllAsync();
+            return Ok(_mapper.Map<IEnumerable<OriginalOrderReadDTO>>(originalorders));
+        }
+        [HttpGet("{id}", Name = "GetOrderById")]
+        public async Task<ActionResult<OriginalOrderReadDTO>> GetOriginalOrderById(int id)
+        {
+            var originalorderitem = await _originalOrderRepo.GetByIdAsync(id);
+            if (originalorderitem != null)
+            {
+                return Ok(_mapper.Map<OriginalOrderReadDTO>(originalorderitem));
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+        [HttpPost]
+        public async Task<ActionResult<OriginalOrderReadDTO>> CreateOriginalOrder(OriginalOrderCreateDTO ordercreatedto)
+        {
+            Console.WriteLine("--------- Posting an Original Order --------");
+            var originalorderModel = _mapper.Map<OriginalOrder>(ordercreatedto);
+            await _originalOrderRepo.AddAsync(originalorderModel);
+            var orignalorderreaddto = _mapper.Map<OriginalOrderReadDTO>(originalorderModel);
+            return CreatedAtRoute(nameof(GetOriginalOrderById), new { id = orignalorderreaddto.Id }, orignalorderreaddto);
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace StockService.Data
             builder.Entity<StockUnit>().HasOne(su => su.Stock).WithMany(s => s.StockUnits).OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Order>().HasOne(o => o.OriginalOrder).WithMany(oo => oo.Orders).OnDelete(DeleteBehavior.Cascade);
             builder.Entity<OriginalOrder>().HasOne(oo => oo.User).WithMany(u => u.OriginalOrders).OnDelete(DeleteBehavior.Cascade);
-            builder.Entity<Order>().HasOne(o=>o.Stock).WithMany(u => u.Orders).OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<OriginalOrder>().HasOne(o=>o.Stock).WithMany(u => u.OriginalOrders).OnDelete(DeleteBehavior.Cascade);
             #endregion
 
             #region doubles
