@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StockService.Models
 {
-    public class User:IEntityBase
+    public class User:IdentityUser,IEntityBase
     {
         [Key]
         [Required]

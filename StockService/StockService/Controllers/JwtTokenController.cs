@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using StockService.Data;
+using StockService.Data.Enums;
 using StockService.Data.Models;
 using StockService.Models;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,24 +18,22 @@ namespace StockService.Controllers
     public class JwtTokenController : ControllerBase
     {
         public IConfiguration _configuration;
+        public SignInManager<User> _signInManager;
+        public UserManager<User> _userManager;
         public readonly AppDbContext _context;
-        public JwtTokenController(IConfiguration configuration, AppDbContext context)
+        public JwtTokenController(IConfiguration configuration, AppDbContext context, SignInManager<User> signInManager, UserManager<User> userManager)
         {
             _configuration = configuration;
             _context = context;
+            _signInManager = signInManager;
+            _userManager = userManager;
         }
-        [HttpGet]
-        public async Task<User> GetUser(string username, string password)
-        {
-            return await _context.Users.FirstOrDefaultAsync(u => u.UserName == username && u.Password == password);
-        }
-
         [HttpPost("login")]
         public async Task<IActionResult> Post(User user)
         {
             if (user!=null && user.UserName != null && user.Password != null)
             {
-                var userData = await GetUser(user.UserName, user.Password);
+                var userData = await _userManager.FindByNameAsync(user.UserName);
                 var jwt = _configuration.GetSection("Jwt").Get<Jwt>();
                 if (userData !=null)
                 {
@@ -67,7 +67,7 @@ namespace StockService.Controllers
             if (ModelState.IsValid)
             {
                 // Check if the user already exists
-                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);
+                var existingUser = await _userManager.FindByNameAsync(model.UserName);
                 if (existingUser != null)
                 {
                     return BadRequest("User with the provided username already exists.");
@@ -77,11 +77,12 @@ namespace StockService.Controllers
                 var newUser = new User
                 {
                     UserName = model.UserName,
-                    Password = model.Password
+                    UserType = UserTypeEnum.Real,
+                    Balance = 0,
                     // Set other properties as needed
                 };
 
-                _context.Users.Add(newUser);
+                _userManager.CreateAsync(newUser, model.Password);
                 await _context.SaveChangesAsync();
 
                 // Return a success message or the created user data
