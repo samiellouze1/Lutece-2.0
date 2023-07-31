@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace StockService.Migrations
 {
     /// <inheritdoc />
-    public partial class first : Migration
+    public partial class @fixed : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,7 +18,8 @@ namespace StockService.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AveragePrice = table.Column<double>(type: "float(6)", precision: 6, scale: 2, nullable: false)
+                    AveragePrice = table.Column<double>(type: "float(6)", precision: 6, scale: 2, nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,8 +33,21 @@ namespace StockService.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserType = table.Column<int>(type: "int", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Balance = table.Column<double>(type: "float(6)", precision: 6, scale: 2, nullable: false)
+                    Balance = table.Column<double>(type: "float(6)", precision: 6, scale: 2, nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -51,11 +65,18 @@ namespace StockService.Migrations
                     OriginalQuantity = table.Column<int>(type: "int", nullable: false),
                     RemainingQuantity = table.Column<int>(type: "int", nullable: false),
                     DateDeposit = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    StockId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OriginalOrders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OriginalOrders_Stocks_StockId",
+                        column: x => x.StockId,
+                        principalTable: "Stocks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OriginalOrders_Users_UserId",
                         column: x => x.UserId,
@@ -102,8 +123,7 @@ namespace StockService.Migrations
                     OrderStatus = table.Column<int>(type: "int", nullable: false),
                     ExecutedPrice = table.Column<double>(type: "float(6)", precision: 6, scale: 2, nullable: true),
                     DateExecution = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    OriginalOrderId = table.Column<int>(type: "int", nullable: false),
-                    StockId = table.Column<int>(type: "int", nullable: false)
+                    OriginalOrderId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -114,12 +134,6 @@ namespace StockService.Migrations
                         principalTable: "OriginalOrders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Orders_Stocks_StockId",
-                        column: x => x.StockId,
-                        principalTable: "Stocks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -128,8 +142,8 @@ namespace StockService.Migrations
                 column: "OriginalOrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_StockId",
-                table: "Orders",
+                name: "IX_OriginalOrders_StockId",
+                table: "OriginalOrders",
                 column: "StockId");
 
             migrationBuilder.CreateIndex(

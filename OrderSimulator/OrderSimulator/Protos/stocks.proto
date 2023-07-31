@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option csharp_namespace="StockService";
+
+service GrpcStock{
+	rpc GetAllStocks(GetAllRequest) returns (StockResponse);
+}
+
+message GetAllRequest {}
+
+//were not going to pass this
+message GrpcPlatformModel{
+	int32 stockId= 1;
+	string name = 2;
+}
+
+//were going to pass this
+message PlatformResponse{
+	repeated GrpcPlatformModel stock = 1;
+}

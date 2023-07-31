@@ -12,19 +12,12 @@ namespace StockService.Controllers
     {
         private readonly IOrderRepo _orderRepo;
         private readonly IOriginalOrderRepo _originalOrderRepo;
-        private readonly IUserRepo _userRepo;
-        private readonly IStockUnitRepo _StockUnitRepo;
-        private readonly IStockRepo _stockRepo;
-
         private readonly IMapper _mapper;
 
         public OrderController(IMapper mapper, IOrderRepo orderRepo, IOriginalOrderRepo originalOrderRepo, IUserRepo userRepo, IStockUnitRepo StockUnitRepo, IStockRepo stockRepo)
         {
             _orderRepo = orderRepo;
             _originalOrderRepo = originalOrderRepo;
-            _userRepo = userRepo;
-            _StockUnitRepo = StockUnitRepo;
-            _stockRepo = stockRepo;
             _mapper = mapper;
         }
         [HttpGet]

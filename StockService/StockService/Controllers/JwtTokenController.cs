@@ -8,6 +8,7 @@ using StockService.Data.Enums;
 using StockService.Data.Models;
 using StockService.Models;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Dynamic.Core.Tokenizer;
 using System.Security.Claims;
 using System.Text;
 
@@ -29,7 +30,7 @@ namespace StockService.Controllers
             _userManager = userManager;
         }
         [HttpPost("login")]
-        public async Task<IActionResult> Post(User user)
+        public async Task<IActionResult> Post(LoginUserModel user)
         {
             if (user!=null && user.UserName != null && user.Password != null)
             {
@@ -42,9 +43,8 @@ namespace StockService.Controllers
                         new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                        new Claim("Id", user.Id.ToString()),
-                        new Claim("UserName", user.UserName),
-                        new Claim("Password",user.Password)
+                        new Claim("Id", userData.Id.ToString()),
+                        new Claim("UserName", userData.UserName),
                     };
                     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.key));
                     var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -74,19 +74,27 @@ namespace StockService.Controllers
                 }
 
                 // Create a new User entity and add it to the database
-                var newUser = new User
+                var newUser = new User()
                 {
                     UserName = model.UserName,
                     UserType = UserTypeEnum.Real,
                     Balance = 0,
                     // Set other properties as needed
-                };
-
-                _userManager.CreateAsync(newUser, model.Password);
-                await _context.SaveChangesAsync();
-
-                // Return a success message or the created user data
-                return Ok("User registered successfully.");
+                };  
+                var result = await _userManager.CreateAsync(newUser, model.Password);
+                if ( result.Succeeded)
+                {
+                    return Ok("User registered successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("----------------Error -------------");
+                    foreach(var error in result.Errors)
+                    {
+                        Console.WriteLine(error.ToString());
+                    }
+                    return BadRequest(result.ToString());
+                }
             }
             else
             {

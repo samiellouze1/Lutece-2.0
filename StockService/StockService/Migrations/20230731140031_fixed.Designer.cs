@@ -12,8 +12,8 @@ using StockService.Data;
 namespace StockService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230728193834_first")]
-    partial class first
+    [Migration("20230731140031_fixed")]
+    partial class @fixed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,14 +49,9 @@ namespace StockService.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int>("StockId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("OriginalOrderId");
-
-                    b.HasIndex("StockId");
 
                     b.ToTable("Orders");
                 });
@@ -85,10 +80,15 @@ namespace StockService.Migrations
                     b.Property<int>("RemainingQuantity")
                         .HasColumnType("int");
 
+                    b.Property<int>("StockId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StockId");
 
                     b.HasIndex("UserId");
 
@@ -110,6 +110,9 @@ namespace StockService.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -153,12 +156,50 @@ namespace StockService.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
                     b.Property<double>("Balance")
                         .HasPrecision(6, 2)
                         .HasColumnType("float(6)");
 
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserType")
@@ -177,24 +218,24 @@ namespace StockService.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("StockService.Models.Stock", "Stock")
-                        .WithMany("Orders")
-                        .HasForeignKey("StockId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("OriginalOrder");
-
-                    b.Navigation("Stock");
                 });
 
             modelBuilder.Entity("StockService.Models.OriginalOrder", b =>
                 {
+                    b.HasOne("StockService.Models.Stock", "Stock")
+                        .WithMany("OriginalOrders")
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("StockService.Models.User", "User")
                         .WithMany("OriginalOrders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Stock");
 
                     b.Navigation("User");
                 });
@@ -225,7 +266,7 @@ namespace StockService.Migrations
 
             modelBuilder.Entity("StockService.Models.Stock", b =>
                 {
-                    b.Navigation("Orders");
+                    b.Navigation("OriginalOrders");
 
                     b.Navigation("StockUnits");
                 });

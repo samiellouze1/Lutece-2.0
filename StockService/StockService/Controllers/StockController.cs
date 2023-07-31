@@ -10,7 +10,6 @@ namespace StockService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class StockController : ControllerBase
     {
         private readonly IStockRepo _stockRepo;
