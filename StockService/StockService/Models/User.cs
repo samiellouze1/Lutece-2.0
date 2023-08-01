@@ -10,7 +10,7 @@ namespace StockService.Models
         [Key]
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public  int Id { get; set; }
+        public  string Id { get; set; }
         [Required]
         public UserTypeEnum UserType { get; set; }
 

@@ -7,7 +7,7 @@ namespace StockService.Models
     {
         [Key]
         [Required]
-        public int Id { get; set; }
+        public string Id{ get; set; }
         public virtual User User { get; set; }
         public virtual Stock Stock { get;set; }
         [Required]

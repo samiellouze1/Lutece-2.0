@@ -27,7 +27,7 @@ namespace StockService.Controllers
             return Ok(_mapper.Map<IEnumerable<StockReadDTO>>(stocks));
         }
         [HttpGet("{id}", Name = "GetStockById")]
-        public async Task<ActionResult<StockReadDTO>> GetStockById(int id)
+        public async Task<ActionResult<StockReadDTO>> GetStockById(string id)
         {
             var stockitem = await _stockRepo.GetByIdAsync(id);
             if (stockitem != null)

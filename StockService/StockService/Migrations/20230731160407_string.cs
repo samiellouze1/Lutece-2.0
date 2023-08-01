@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace StockService.Migrations
 {
     /// <inheritdoc />
-    public partial class @fixed : Migration
+    public partial class @string : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,8 +15,7 @@ namespace StockService.Migrations
                 name: "Stocks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AveragePrice = table.Column<double>(type: "float(6)", precision: 6, scale: 2, nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false)
@@ -30,8 +29,7 @@ namespace StockService.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserType = table.Column<int>(type: "int", nullable: false),
                     Balance = table.Column<double>(type: "float(6)", precision: 6, scale: 2, nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -58,15 +56,14 @@ namespace StockService.Migrations
                 name: "OriginalOrders",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     OrderType = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<double>(type: "float(6)", precision: 6, scale: 2, nullable: false),
                     OriginalQuantity = table.Column<int>(type: "int", nullable: false),
                     RemainingQuantity = table.Column<int>(type: "int", nullable: false),
                     DateDeposit = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    StockId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    StockId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -89,10 +86,9 @@ namespace StockService.Migrations
                 name: "StockUnits",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    StockId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    StockId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     StockUnitStatus = table.Column<int>(type: "int", nullable: false),
                     DateBought = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -117,13 +113,12 @@ namespace StockService.Migrations
                 name: "Orders",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     OrderStatus = table.Column<int>(type: "int", nullable: false),
                     ExecutedPrice = table.Column<double>(type: "float(6)", precision: 6, scale: 2, nullable: true),
                     DateExecution = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    OriginalOrderId = table.Column<int>(type: "int", nullable: false)
+                    OriginalOrderId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -35,21 +35,29 @@ namespace StockService.Controllers
             if (user!=null && user.UserName != null && user.Password != null)
             {
                 var userData = await _userManager.FindByNameAsync(user.UserName);
-                var jwt = _configuration.GetSection("Jwt").Get<Jwt>();
                 if (userData !=null)
                 {
-                    var claims = new[]
+                    var check = await _userManager.CheckPasswordAsync(userData, user.Password);
+                    if (check)
                     {
-                        new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                        new Claim("Id", userData.Id.ToString()),
-                        new Claim("UserName", userData.UserName),
-                    };
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.key));
-                    var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                    var token = new JwtSecurityToken(jwt.Issuer, jwt.Audience,claims,expires: DateTime.UtcNow.AddMinutes(20), signingCredentials: signIn);
-                    return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+                        var jwt = _configuration.GetSection("Jwt").Get<Jwt>();
+                        var claims = new[]
+                        {
+                            new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
+                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                            new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                            new Claim("Id", userData.Id),
+                            new Claim("UserName", userData.UserName),
+                        };
+                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.key));
+                        var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                        var token = new JwtSecurityToken(jwt.Issuer, jwt.Audience, claims, expires: DateTime.UtcNow.AddMinutes(20), signingCredentials: signIn);
+                        return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+                    }
+                    else
+                    {
+                        return BadRequest("Invalid Credentials");
+                    }
                 }
                 else
                 {
