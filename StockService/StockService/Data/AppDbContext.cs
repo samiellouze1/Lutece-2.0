@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using StockService.Models;
 
 namespace StockService.Data
 {
-    public class AppDbContext:DbContext
+    public class AppDbContext:IdentityDbContext<User>
     {
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<OriginalOrder> OriginalOrders { get; set; }
