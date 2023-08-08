@@ -1,4 +1,4 @@
-namespace OrderSimulator
+namespace RecommandationService
 {
     public class WeatherForecast
     {

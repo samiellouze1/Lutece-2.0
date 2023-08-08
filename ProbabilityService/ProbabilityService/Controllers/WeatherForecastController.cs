@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace OrderSimulator.Controllers
+namespace ProbabilityService.Controllers
 {
     [ApiController]
     [Route("[controller]")]
