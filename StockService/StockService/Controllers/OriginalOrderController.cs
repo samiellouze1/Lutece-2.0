@@ -11,21 +11,23 @@ namespace StockService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrderController : ControllerBase
+    public class OriginalOrderController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
         private readonly IOrderRepo _orderRepo;
         private readonly IOriginalOrderRepo _originalOrderRepo;
         private readonly IMapper _mapper;
         private readonly IUserRepo _userRepo;
+        private readonly IStockUnitRepo _stockUnitRepo;
 
-        public OrderController(IMapper mapper, IOrderRepo orderRepo, IOriginalOrderRepo originalOrderRepo, IUserRepo userRepo, UserManager<User> userManager)
+        public OriginalOrderController(IMapper mapper, IOrderRepo orderRepo, IOriginalOrderRepo originalOrderRepo, IUserRepo userRepo, UserManager<User> userManager, IStockUnitRepo stockUnitRepo)
         {
             _originalOrderRepo = originalOrderRepo;
             _orderRepo = orderRepo;
             _mapper = mapper;
             _userRepo = userRepo;
             _userManager = userManager;
+            _stockUnitRepo = stockUnitRepo;
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OriginalOrderReadDTO>>> GetOriginalOrders()
@@ -34,7 +36,7 @@ namespace StockService.Controllers
             var originalorders = await _originalOrderRepo.GetAllAsync();
             return Ok(_mapper.Map<IEnumerable<OriginalOrderReadDTO>>(originalorders));
         }
-        [HttpGet("{id}", Name = "GetOrderById")]
+        [HttpGet("{id}", Name = "GetOriginalOrderById")]
         public async Task<ActionResult<OriginalOrderReadDTO>> GetOriginalOrderById(string id)
         {
             var originalorderitem = await _originalOrderRepo.GetByIdAsync(id);
@@ -48,16 +50,14 @@ namespace StockService.Controllers
             }
         }
       
-        [HttpPost,Authorize]
+        [HttpPost("CreateOriginalOrder"),Authorize]
         public async Task<ActionResult<OriginalOrderReadDTO>> CreateOriginalOrder(OriginalOrderCreateDTO ordercreatedto)
         {
             Console.WriteLine("--------- Posting an Original Order --------");
             var originalorderModel = _mapper.Map<OriginalOrder>(ordercreatedto);
             // Get the user's unique identifier from claims
-            var userr = HttpContext.User;
-            var userid = userr.FindFirst(ClaimTypes.NameIdentifier);
-            var user = await _userManager.FindByIdAsync(userid.Value);
-            string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            var userId = User.FindFirst("Id").Value;
+            var user = await _userManager.FindByIdAsync(userId);
             originalorderModel.User = user;
             await _originalOrderRepo.AddAsync(originalorderModel);
             var orignalorderreaddto = _mapper.Map<OriginalOrderReadDTO>(originalorderModel);
