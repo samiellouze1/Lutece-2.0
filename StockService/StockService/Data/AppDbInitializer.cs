@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StockService.Data.Enums;
 using StockService.Models;
+using System.Runtime.Intrinsics.X86;
 
 namespace StockService.Data
 {
@@ -21,8 +22,37 @@ namespace StockService.Data
                         new Stock() {Id="2", Name="Tesla", AveragePrice=150, Quantity=1000},
                         new Stock() {Id="3", Name="Meta", AveragePrice=120,Quantity=300},
                         new Stock() {Id="4", Name="Twitter", AveragePrice=175, Quantity=200}
-                    }
-                    );
+                    });
+                    context.SaveChanges();
+                }
+                if (!context.StockUnits.Any()) 
+                {
+                    var stock1 = context.Stocks.Find("1");
+                    var stock2 = context.Stocks.Find("2");
+                    var stock3 = context.Stocks.Find("3");
+                    var stock4 = context.Stocks.Find("4");
+
+                    var user1 = context.Users.Find("1");
+                    var user2 = context.Users.Find("2");
+                    var user3 = context.Users.Find("3");
+                    var user4 = context.Users.Find("4");
+
+                    StockUnitCreation(user1, stock4,50, context);
+                    StockUnitCreation(user1, stock3,50, context);
+                    StockUnitCreation(user1, stock2,10, context);
+                    StockUnitCreation(user1, stock1,100, context);
+                    StockUnitCreation(user2, stock4,50, context);
+                    StockUnitCreation(user2, stock3,50, context);
+                    StockUnitCreation(user2, stock2,70, context);
+                    StockUnitCreation(user2, stock1,120, context);
+                    StockUnitCreation(user3, stock4,50, context);
+                    StockUnitCreation(user3, stock3,100, context);
+                    StockUnitCreation(user3, stock2,120, context);
+                    StockUnitCreation(user3, stock1,130, context);
+                    StockUnitCreation(user4, stock4,50, context);
+                    StockUnitCreation(user4, stock3,100, context);
+                    StockUnitCreation(user4, stock2,800, context);
+                    StockUnitCreation(user4, stock1,50, context);
                 }
             }
         }
@@ -96,8 +126,17 @@ namespace StockService.Data
                     //AddToRole
                 }
                 #endregion
-
-
+            }
+        }
+        private static void StockUnitCreation(User user, Stock stock, int quantity, AppDbContext context)
+        {
+            for (int i = 0; i < quantity; i++)
+            {
+                context.Add
+                (
+                        new StockUnit() { User = user, Stock = stock, StockUnitStatus = StockUnitStatusEnum.InStock, DateBought = DateTime.Now }
+                    );
+                context.SaveChanges();
             }
         }
     }

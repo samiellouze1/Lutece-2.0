@@ -1,5 +1,6 @@
 ﻿using StockService.Data.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StockService.Models
 {
@@ -7,6 +8,8 @@ namespace StockService.Models
     {
         [Key]
         [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+
         public string Id{ get; set; }
         [Required]
         public int Quantity { get; set; }
