@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using StockService.Data.Enums;
 using StockService.Data.IRepo;
 using StockService.DTOs;
 using StockService.Models;
@@ -61,6 +62,31 @@ namespace StockService.Controllers
             originalorderModel.User = user;
             await _originalOrderRepo.AddAsync(originalorderModel);
             var orignalorderreaddto = _mapper.Map<OriginalOrderReadDTO>(originalorderModel);
+
+            if (originalorderModel.OrderType==OrderTypeEnum.Buy)
+            {
+                if (user.Balance<originalorderModel.Price*originalorderModel.OriginalQuantity)
+                {
+                    return BadRequest("you don't have enough balance to do this order");
+                }
+                else
+                {
+                    var sellingorders = await _orderRepo.GetAllAsync(o=>o.OriginalOrder.Stock);
+                    var sellingorderstolist = sellingorders.ToList();
+                    var correspondantorders = sellingorderstolist.Where(o => o.OriginalOrder.Stock == originalorderModel.Stock).Where(o => o.OriginalOrder.Price < originalorderModel.Price);
+                    foreach (var correspondantorder in correspondantorders)
+                    {
+                        correspondantorder.OrderStatus = OrderStatusEnum.Executed;
+                        await _orderRepo.SaveChangesAsync();
+                        //mezel
+                    }
+                }
+            }
+            else 
+            {
+                //mezel
+                return BadRequest();
+            }
             return CreatedAtRoute(nameof(GetOriginalOrderById), new { id = orignalorderreaddto.Id }, orignalorderreaddto);
         }
     }

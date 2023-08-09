@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Azure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StockService.Data.Enums;
