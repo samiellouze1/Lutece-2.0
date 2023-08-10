@@ -1,10 +1,11 @@
 ﻿using StockService.Data.Enums;
 using StockService.Data.IRepo;
+using StockService.Data.IServices;
 using StockService.Models;
 
-namespace StockService.Data.Repo
+namespace StockService.Data.Services
 {
-    public class CreateOriginalOrderService:ICreateOriginalOrderService
+    public class CreateOriginalOrderService : ICreateOriginalOrderService
     {
         private readonly IOrderRepo _orderRepo;
         private readonly IOriginalOrderRepo _originalOrderRepo;
@@ -76,8 +77,8 @@ namespace StockService.Data.Repo
         {
             var allstockunits = await _stockUnitRepo.GetAllAsync();
             var stockunitlist = allstockunits.
-                Where(su=>su.Stock==originalorderModel.Stock).
-                Where(su=>su.User==originalorderModel.User).
+                Where(su => su.Stock == originalorderModel.Stock).
+                Where(su => su.User == originalorderModel.User).
                 ToList();
             return stockunitlist;
         }
