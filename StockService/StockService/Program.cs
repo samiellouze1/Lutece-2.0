@@ -52,6 +52,12 @@ builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IStockUnitRepo, StockUnitRepo>();
 builder.Services.AddScoped<IStockRepo, StockRepo>();
 
+
+#endregion
+
+#region services
+
+builder.Services.AddScoped<ICreateOriginalOrderService, CreateOriginalOrderService>();
 #endregion
 
 #region automapper

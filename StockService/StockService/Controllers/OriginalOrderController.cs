@@ -16,20 +16,16 @@ namespace StockService.Controllers
     public class OriginalOrderController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
-        private readonly IOrderRepo _orderRepo;
         private readonly IOriginalOrderRepo _originalOrderRepo;
         private readonly IMapper _mapper;
-        private readonly IUserRepo _userRepo;
-        private readonly IStockUnitRepo _stockUnitRepo;
+        private readonly ICreateOriginalOrderService _createooService;
 
-        public OriginalOrderController(IMapper mapper, IOrderRepo orderRepo, IOriginalOrderRepo originalOrderRepo, IUserRepo userRepo, UserManager<User> userManager, IStockUnitRepo stockUnitRepo)
+        public OriginalOrderController(IMapper mapper, IOriginalOrderRepo originalOrderRepo, UserManager<User> userManager, ICreateOriginalOrderService createooService)
         {
             _originalOrderRepo = originalOrderRepo;
-            _orderRepo = orderRepo;
             _mapper = mapper;
-            _userRepo = userRepo;
             _userManager = userManager;
-            _stockUnitRepo = stockUnitRepo;
+            _createooService = createooService;
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OriginalOrderReadDTO>>> GetOriginalOrders()
@@ -51,14 +47,8 @@ namespace StockService.Controllers
                 return NotFound();
             }
         }
-
-
-
-
-
-
         //needs revision!!!
-        [HttpPost("CreateOriginalOrder"),Authorize]
+        [HttpPost("CreateOriginalOrder"), Authorize]
         public async Task<ActionResult<OriginalOrderReadDTO>> CreateOriginalOrder(OriginalOrderCreateDTO ordercreatedto)
         {
             //for visualizing progress
@@ -75,45 +65,45 @@ namespace StockService.Controllers
             originalorderModel.User = user;
             originalorderModel.RemainingQuantity = ordercreatedto.OriginalQuantity;
             //Buying Order
-            if (originalorderModel.OrderType==OrderTypeEnum.Buy)
+            if (originalorderModel.OrderType == OrderTypeEnum.Buy)
             {
-                if (user.Balance<originalorderModel.Price*originalorderModel.OriginalQuantity)
+                if (user.Balance < originalorderModel.Price * originalorderModel.OriginalQuantity)
                 {
                     return BadRequest("you don't have enough balance to do this order");
                 }
                 else
                 {
-                    var sellingOriginalOrdersList = await GetCorrespondantSellingOrders(originalorderModel);
+                    var sellingOriginalOrdersList = await _createooService.GetCorrespondantSellingOrders(originalorderModel);
                     var quantityneeded = originalorderModel.OriginalQuantity;
-                    foreach (var originalorder in sellingOriginalOrdersList) 
+                    foreach (var originalorder in sellingOriginalOrdersList)
                     {
                         var originalorderexecuted = true;
-                        foreach ( var order in originalorder.Orders.Where(o=>o.OrderStatus==OrderStatusEnum.Active))
+                        foreach (var order in originalorder.Orders.Where(o => o.OrderStatus == OrderStatusEnum.Active))
                         {
                             if (quantityneeded == 0)
                             {
                                 originalorderexecuted = false;
                                 break;
                             }
-                            await ExecuteOrder(order,originalorderModel.Price);
-                            await ChangeInformationOfAStockUnit(originalorder, user);
-                            await CreateExecutedOrder(originalorderModel);
+                            await _createooService.ExecuteOrder(order, originalorderModel.Price);
+                            await _createooService.ChangeInformationOfAStockUnit(originalorder, user);
+                            await _createooService.CreateExecutedOrder(originalorderModel);
                             quantityneeded -= 1;
                         }
                         if (originalorderexecuted)
                         {
-                            await ExecuteOriginalOrder(originalorder);
+                            await _createooService.ExecuteOriginalOrder(originalorder);
                         }
                     }
-                    await StoreRemainingQuantity(originalorderModel,quantityneeded);
+                    await _createooService.StoreRemainingQuantity(originalorderModel, quantityneeded);
                     for (int i = 0; i < quantityneeded; i++)
                     {
-                        await CreateInMarketOrder(originalorderModel);
+                        await _createooService.CreateInMarketOrder(originalorderModel);
                     }
                 }
             }
             //selling order
-            else 
+            else
             {
                 return BadRequest();
             }
@@ -121,63 +111,6 @@ namespace StockService.Controllers
             var orignalorderreaddto = _mapper.Map<OriginalOrderReadDTO>(originalorderModel);
             return CreatedAtRoute(nameof(GetOriginalOrderById), new { id = orignalorderreaddto.Id }, orignalorderreaddto);
         }
-        #region needed methods
-        private async Task CreateInMarketOrder(OriginalOrder originalorderModel)
-        {
-            var newOrderMarket = new Order()
-            {
-                OrderStatus = OrderStatusEnum.Active,
-                OriginalOrder = originalorderModel
-            };
-            await _orderRepo.AddAsync(newOrderMarket);
-        }
-        private async Task StoreRemainingQuantity(OriginalOrder originalorderModel, int quantityneeded)
-        {
-            originalorderModel.RemainingQuantity = quantityneeded;
-            await _originalOrderRepo.SaveChangesAsync();
-        }
-        private async Task<List<OriginalOrder>> GetCorrespondantSellingOrders(OriginalOrder originalorderModel)
-        {
-            var OriginalOrders = await _originalOrderRepo.GetAllAsync(oo => oo.Stock, oo => oo.Orders, oo => oo.User);
-            var sellingOriginalOrdersList = OriginalOrders.
-                                                            Where(oo => oo.OrderType == OrderTypeEnum.Sell).
-                                                            Where(oo => oo.Stock == originalorderModel.Stock).
-                                                            Where(oo => oo.OriginalOrderStatus == OriginalOrderStatusEnum.Active).
-                                                            OrderBy(oo => oo.Price).
-                                                            ToList();
-            return sellingOriginalOrdersList;
-        }
-        private async Task ExecuteOrder(Order order,double Price)
-        {
-            order.OrderStatus = OrderStatusEnum.Executed;
-            order.ExecutedPrice = Price;
-            await _orderRepo.SaveChangesAsync();
-        }
-        private async Task CreateExecutedOrder(OriginalOrder originalorderModel)
-        {
-            //creation of order in executed state
-            var newOrderExecuted = new Order()
-            {
-                OriginalOrder = originalorderModel,
-                OrderStatus = OrderStatusEnum.Executed,
-                DateExecution = DateTime.Now
-            };
-            await _orderRepo.AddAsync(newOrderExecuted);
-        }
-        private async Task ChangeInformationOfAStockUnit(OriginalOrder originalorder, User user)
-        {
-            var theseller = originalorder.User;
-            var stockunit = theseller.StockUnits.Where(su => su.Stock == originalorder.Stock).Where(su => su.StockUnitStatus == StockUnitStatusEnum.InMarket).ToList()[0];
-            stockunit.User = user;
-            stockunit.StockUnitStatus = StockUnitStatusEnum.InStock;
-            stockunit.DateBought = DateTime.Now;
-            await _stockUnitRepo.SaveChangesAsync();
-        }
-        private async Task ExecuteOriginalOrder(OriginalOrder originalorder)
-        {
-            originalorder.OriginalOrderStatus = OriginalOrderStatusEnum.Executed;
-            await _originalOrderRepo.SaveChangesAsync();
-        }
-        #endregion
+
     }
 }
