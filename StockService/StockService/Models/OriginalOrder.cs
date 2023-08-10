@@ -26,5 +26,7 @@ namespace StockService.Models
         [Required]
         public string StockId { get; set; }
         public virtual Stock Stock { get; set; }
+        [Required]
+        public OriginalOrderStatusEnum OriginalOrderStatus { get; set; }
     }
 }

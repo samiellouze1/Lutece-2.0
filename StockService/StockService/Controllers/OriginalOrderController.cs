@@ -54,14 +54,20 @@ namespace StockService.Controllers
         [HttpPost("CreateOriginalOrder"),Authorize]
         public async Task<ActionResult<OriginalOrderReadDTO>> CreateOriginalOrder(OriginalOrderCreateDTO ordercreatedto)
         {
+            //for visualizing progress
             Console.WriteLine("--------- Posting an Original Order --------");
+
+            //mapping
             var originalorderModel = _mapper.Map<OriginalOrder>(ordercreatedto);
-            // Get the user's unique identifier from claims
+
+            // Get the current user
             var userId = User.FindFirst("Id").Value;
             var user = await _userManager.FindByIdAsync(userId);
+
+            //adding the original order to db
             originalorderModel.User = user;
+            originalorderModel.RemainingQuantity = ordercreatedto.OriginalQuantity;
             await _originalOrderRepo.AddAsync(originalorderModel);
-            var orignalorderreaddto = _mapper.Map<OriginalOrderReadDTO>(originalorderModel);
 
             if (originalorderModel.OrderType==OrderTypeEnum.Buy)
             {
@@ -71,14 +77,45 @@ namespace StockService.Controllers
                 }
                 else
                 {
-                    var sellingorders = await _orderRepo.GetAllAsync(o=>o.OriginalOrder.Stock);
-                    var sellingorderstolist = sellingorders.ToList();
-                    var correspondantorders = sellingorderstolist.Where(o => o.OriginalOrder.Stock == originalorderModel.Stock).Where(o => o.OriginalOrder.Price < originalorderModel.Price);
-                    foreach (var correspondantorder in correspondantorders)
+                    var OriginalOrders = await _originalOrderRepo.GetAllAsync(oo => oo.Stock, oo => oo.Orders,oo=>oo.User) ;
+                    var sellingOriginalOrdersList = OriginalOrders.
+                                                                    ToList().
+                                                                    Where(oo=>oo.OrderType==OrderTypeEnum.Sell).
+                                                                    Where(oo=>oo.Stock==originalorderModel.Stock).
+                                                                    Where(oo=>oo.OriginalOrderStatus== OriginalOrderStatusEnum.Active).
+                                                                    OrderBy(oo=>oo.Price);
+                    var quantityneeded = originalorderModel.OriginalQuantity;
+                    foreach (var originalorder in sellingOriginalOrdersList) 
                     {
-                        correspondantorder.OrderStatus = OrderStatusEnum.Executed;
-                        await _orderRepo.SaveChangesAsync();
-                        //mezel
+                        var originalorderexecuted = true;
+                        foreach ( var order in originalorder.Orders.Where(o=>o.OrderStatus==OrderStatusEnum.Active))
+                        {
+                            if (quantityneeded == 0)
+                            {
+                                break;
+                                originalorderexecuted = false;
+                            }
+                            order.OrderStatus= OrderStatusEnum.Executed;
+                            order.ExecutedPrice = originalorderModel.Price;
+                            await _orderRepo.SaveChangesAsync();
+                            quantityneeded-=1;
+
+                            //change information of the stock unit
+                            var theseller = originalorder.User;
+                            var stockunit = theseller.StockUnits.Where(su => su.Stock == originalorder.Stock).Where(su => su.StockUnitStatus == StockUnitStatusEnum.InMarket).ToList()[0];
+                            stockunit.User = user;
+                            stockunit.StockUnitStatus = StockUnitStatusEnum.InStock;
+                            stockunit.DateBought= DateTime.Now;
+
+                        }
+
+                        if (originalorderexecuted)
+                        {
+                            originalorderModel.OriginalOrderStatus=OriginalOrderStatusEnum.Executed;
+                            await _originalOrderRepo.SaveChangesAsync();                       
+                        }
+                        originalorderModel.RemainingQuantity = quantityneeded;
+                        await _originalOrderRepo.SaveChangesAsync();
                     }
                 }
             }
@@ -87,6 +124,7 @@ namespace StockService.Controllers
                 //mezel
                 return BadRequest();
             }
+            var orignalorderreaddto = _mapper.Map<OriginalOrderReadDTO>(originalorderModel);
             return CreatedAtRoute(nameof(GetOriginalOrderById), new { id = orignalorderreaddto.Id }, orignalorderreaddto);
         }
     }
