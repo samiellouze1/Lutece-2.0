@@ -121,7 +121,6 @@ namespace StockService.Controllers
             var orignalorderreaddto = _mapper.Map<OriginalOrderReadDTO>(originalorderModel);
             return CreatedAtRoute(nameof(GetOriginalOrderById), new { id = orignalorderreaddto.Id }, orignalorderreaddto);
         }
-
         #region needed methods
         private async Task CreateInMarketOrder(OriginalOrder originalorderModel)
         {
@@ -180,6 +179,5 @@ namespace StockService.Controllers
             await _originalOrderRepo.SaveChangesAsync();
         }
         #endregion
-
     }
 }
