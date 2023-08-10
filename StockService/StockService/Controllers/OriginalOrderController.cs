@@ -50,7 +50,13 @@ namespace StockService.Controllers
                 return NotFound();
             }
         }
-      
+
+
+
+
+
+
+        //needs revision!!!
         [HttpPost("CreateOriginalOrder"),Authorize]
         public async Task<ActionResult<OriginalOrderReadDTO>> CreateOriginalOrder(OriginalOrderCreateDTO ordercreatedto)
         {
@@ -67,8 +73,7 @@ namespace StockService.Controllers
             //adding the original order to db
             originalorderModel.User = user;
             originalorderModel.RemainingQuantity = ordercreatedto.OriginalQuantity;
-            await _originalOrderRepo.AddAsync(originalorderModel);
-
+            //Buying Order
             if (originalorderModel.OrderType==OrderTypeEnum.Buy)
             {
                 if (user.Balance<originalorderModel.Price*originalorderModel.OriginalQuantity)
@@ -92,38 +97,64 @@ namespace StockService.Controllers
                         {
                             if (quantityneeded == 0)
                             {
-                                break;
                                 originalorderexecuted = false;
+                                break;
                             }
                             order.OrderStatus= OrderStatusEnum.Executed;
                             order.ExecutedPrice = originalorderModel.Price;
                             await _orderRepo.SaveChangesAsync();
-                            quantityneeded-=1;
+
+                            //creation of order in executed state
+                            var newOrderExecuted = new Order()
+                            {
+                                OriginalOrder = originalorderModel,
+                                OrderStatus=OrderStatusEnum.Executed,
+                                DateExecution=DateTime.Now
+                            };
+                            await _orderRepo.AddAsync(newOrderExecuted);
 
                             //change information of the stock unit
                             var theseller = originalorder.User;
                             var stockunit = theseller.StockUnits.Where(su => su.Stock == originalorder.Stock).Where(su => su.StockUnitStatus == StockUnitStatusEnum.InMarket).ToList()[0];
                             stockunit.User = user;
                             stockunit.StockUnitStatus = StockUnitStatusEnum.InStock;
-                            stockunit.DateBought= DateTime.Now;
+                            stockunit.DateBought = DateTime.Now;
 
+                            // reduce needed quantity
+                            quantityneeded -=1;
                         }
 
+                        //change the status of the original order
                         if (originalorderexecuted)
                         {
-                            originalorderModel.OriginalOrderStatus=OriginalOrderStatusEnum.Executed;
+                            originalorder.OriginalOrderStatus=OriginalOrderStatusEnum.Executed;
                             await _originalOrderRepo.SaveChangesAsync();                       
                         }
-                        originalorderModel.RemainingQuantity = quantityneeded;
-                        await _originalOrderRepo.SaveChangesAsync();
+
+
+                    }
+                    //needed quantity to db
+                    originalorderModel.RemainingQuantity = quantityneeded;
+                    await _originalOrderRepo.SaveChangesAsync();
+
+                    //creation of orders to stay in market
+                    for (int i = 0; i < quantityneeded; i++)
+                    {
+                        var newOrderMarket = new Order()
+                        {
+                            OrderStatus = OrderStatusEnum.Active,
+                            OriginalOrder = originalorderModel
+                        };
+                        await _orderRepo.AddAsync(newOrderMarket);
                     }
                 }
             }
+            //selling order
             else 
             {
-                //mezel
                 return BadRequest();
             }
+            await _originalOrderRepo.AddAsync(originalorderModel);
             var orignalorderreaddto = _mapper.Map<OriginalOrderReadDTO>(originalorderModel);
             return CreatedAtRoute(nameof(GetOriginalOrderById), new { id = orignalorderreaddto.Id }, orignalorderreaddto);
         }
