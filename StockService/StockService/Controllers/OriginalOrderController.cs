@@ -6,6 +6,7 @@ using StockService.Data.Enums;
 using StockService.Data.IRepo;
 using StockService.DTOs;
 using StockService.Models;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 
 namespace StockService.Controllers
@@ -82,13 +83,7 @@ namespace StockService.Controllers
                 }
                 else
                 {
-                    var OriginalOrders = await _originalOrderRepo.GetAllAsync(oo => oo.Stock, oo => oo.Orders,oo=>oo.User) ;
-                    var sellingOriginalOrdersList = OriginalOrders.
-                                                                    ToList().
-                                                                    Where(oo=>oo.OrderType==OrderTypeEnum.Sell).
-                                                                    Where(oo=>oo.Stock==originalorderModel.Stock).
-                                                                    Where(oo=>oo.OriginalOrderStatus== OriginalOrderStatusEnum.Active).
-                                                                    OrderBy(oo=>oo.Price);
+                    var sellingOriginalOrdersList = await GetCorrespondantSellingOrders(originalorderModel);
                     var quantityneeded = originalorderModel.OriginalQuantity;
                     foreach (var originalorder in sellingOriginalOrdersList) 
                     {
@@ -100,50 +95,20 @@ namespace StockService.Controllers
                                 originalorderexecuted = false;
                                 break;
                             }
-                            order.OrderStatus= OrderStatusEnum.Executed;
-                            order.ExecutedPrice = originalorderModel.Price;
-                            await _orderRepo.SaveChangesAsync();
-
-                            //creation of order in executed state
-                            var newOrderExecuted = new Order()
-                            {
-                                OriginalOrder = originalorderModel,
-                                OrderStatus=OrderStatusEnum.Executed,
-                                DateExecution=DateTime.Now
-                            };
-                            await _orderRepo.AddAsync(newOrderExecuted);
-
-                            //change information of a stock unit
-                            var theseller = originalorder.User;
-                            var stockunit = theseller.StockUnits.Where(su => su.Stock == originalorder.Stock).Where(su => su.StockUnitStatus == StockUnitStatusEnum.InMarket).ToList()[0];
-                            stockunit.User = user;
-                            stockunit.StockUnitStatus = StockUnitStatusEnum.InStock;
-                            stockunit.DateBought = DateTime.Now;
-
-                            // reduce needed quantity
-                            quantityneeded -=1;
+                            await ExecuteOrder(order,originalorderModel.Price);
+                            await ChangeInformationOfAStockUnit(originalorder, user);
+                            await CreateExecutedOrder(originalorderModel);
+                            quantityneeded -= 1;
                         }
-
-                        //change the status of the original order
                         if (originalorderexecuted)
                         {
-                            originalorder.OriginalOrderStatus=OriginalOrderStatusEnum.Executed;
-                            await _originalOrderRepo.SaveChangesAsync();                       
+                            await ExecuteOriginalOrder(originalorder);
                         }
                     }
-                    //needed quantity to db
-                    originalorderModel.RemainingQuantity = quantityneeded;
-                    await _originalOrderRepo.SaveChangesAsync();
-
-                    //creation of orders to stay in market
+                    await StoreRemainingQuantity(originalorderModel,quantityneeded);
                     for (int i = 0; i < quantityneeded; i++)
                     {
-                        var newOrderMarket = new Order()
-                        {
-                            OrderStatus = OrderStatusEnum.Active,
-                            OriginalOrder = originalorderModel
-                        };
-                        await _orderRepo.AddAsync(newOrderMarket);
+                        await CreateInMarketOrder(originalorderModel);
                     }
                 }
             }
@@ -156,5 +121,65 @@ namespace StockService.Controllers
             var orignalorderreaddto = _mapper.Map<OriginalOrderReadDTO>(originalorderModel);
             return CreatedAtRoute(nameof(GetOriginalOrderById), new { id = orignalorderreaddto.Id }, orignalorderreaddto);
         }
+
+        #region needed methods
+        private async Task CreateInMarketOrder(OriginalOrder originalorderModel)
+        {
+            var newOrderMarket = new Order()
+            {
+                OrderStatus = OrderStatusEnum.Active,
+                OriginalOrder = originalorderModel
+            };
+            await _orderRepo.AddAsync(newOrderMarket);
+        }
+        private async Task StoreRemainingQuantity(OriginalOrder originalorderModel, int quantityneeded)
+        {
+            originalorderModel.RemainingQuantity = quantityneeded;
+            await _originalOrderRepo.SaveChangesAsync();
+        }
+        private async Task<List<OriginalOrder>> GetCorrespondantSellingOrders(OriginalOrder originalorderModel)
+        {
+            var OriginalOrders = await _originalOrderRepo.GetAllAsync(oo => oo.Stock, oo => oo.Orders, oo => oo.User);
+            var sellingOriginalOrdersList = OriginalOrders.
+                                                            Where(oo => oo.OrderType == OrderTypeEnum.Sell).
+                                                            Where(oo => oo.Stock == originalorderModel.Stock).
+                                                            Where(oo => oo.OriginalOrderStatus == OriginalOrderStatusEnum.Active).
+                                                            OrderBy(oo => oo.Price).
+                                                            ToList();
+            return sellingOriginalOrdersList;
+        }
+        private async Task ExecuteOrder(Order order,double Price)
+        {
+            order.OrderStatus = OrderStatusEnum.Executed;
+            order.ExecutedPrice = Price;
+            await _orderRepo.SaveChangesAsync();
+        }
+        private async Task CreateExecutedOrder(OriginalOrder originalorderModel)
+        {
+            //creation of order in executed state
+            var newOrderExecuted = new Order()
+            {
+                OriginalOrder = originalorderModel,
+                OrderStatus = OrderStatusEnum.Executed,
+                DateExecution = DateTime.Now
+            };
+            await _orderRepo.AddAsync(newOrderExecuted);
+        }
+        private async Task ChangeInformationOfAStockUnit(OriginalOrder originalorder, User user)
+        {
+            var theseller = originalorder.User;
+            var stockunit = theseller.StockUnits.Where(su => su.Stock == originalorder.Stock).Where(su => su.StockUnitStatus == StockUnitStatusEnum.InMarket).ToList()[0];
+            stockunit.User = user;
+            stockunit.StockUnitStatus = StockUnitStatusEnum.InStock;
+            stockunit.DateBought = DateTime.Now;
+            await _stockUnitRepo.SaveChangesAsync();
+        }
+        private async Task ExecuteOriginalOrder(OriginalOrder originalorder)
+        {
+            originalorder.OriginalOrderStatus = OriginalOrderStatusEnum.Executed;
+            await _originalOrderRepo.SaveChangesAsync();
+        }
+        #endregion
+
     }
 }
