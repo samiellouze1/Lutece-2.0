@@ -5,7 +5,9 @@ using Microsoft.OpenApi.Models;
 using StockService.Data;
 using StockService.Data.Extensions;
 using StockService.Data.IRepo;
+using StockService.Data.IServices;
 using StockService.Data.Repo;
+using StockService.Data.Services;
 using StockService.Models;
 
 

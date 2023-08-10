@@ -71,5 +71,15 @@ namespace StockService.Data.Repo
             originalorder.OriginalOrderStatus = OriginalOrderStatusEnum.Executed;
             await _originalOrderRepo.SaveChangesAsync();
         }
+
+        public async Task<List<StockUnit>> GetAllCorrespondingStockUnits(OriginalOrder originalorderModel)
+        {
+            var allstockunits = await _stockUnitRepo.GetAllAsync();
+            var stockunitlist = allstockunits.
+                Where(su=>su.Stock==originalorderModel.Stock).
+                Where(su=>su.User==originalorderModel.User).
+                ToList();
+            return stockunitlist;
+        }
     }
 }

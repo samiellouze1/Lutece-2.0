@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StockService.Data.Enums;
 using StockService.Data.IRepo;
+using StockService.Data.IServices;
 using StockService.DTOs;
 using StockService.Models;
-using System.Runtime.InteropServices;
-using System.Security.Claims;
+
 
 namespace StockService.Controllers
 {
@@ -69,7 +69,7 @@ namespace StockService.Controllers
             {
                 if (user.Balance < originalorderModel.Price * originalorderModel.OriginalQuantity)
                 {
-                    return BadRequest("you don't have enough balance to do this order");
+                    return BadRequest("you don't have enough balance to execute this order");
                 }
                 else
                 {
@@ -105,7 +105,20 @@ namespace StockService.Controllers
             //selling order
             else
             {
-                return BadRequest();
+                var stockunits = await _createooService.GetAllCorrespondingStockUnits(originalorderModel);
+                var stockunittolist = stockunits.ToList();
+                if (stockunittolist.Count < originalorderModel.OriginalQuantity)
+                {
+                    return BadRequest("you do not have enough stock units to execute this order");
+                }
+                else
+                {
+                    //create the original order
+                    //look for corresponding orders
+                    //execute them
+                    //change state
+                    //laisser le reste
+                }
             }
             await _originalOrderRepo.AddAsync(originalorderModel);
             var orignalorderreaddto = _mapper.Map<OriginalOrderReadDTO>(originalorderModel);
