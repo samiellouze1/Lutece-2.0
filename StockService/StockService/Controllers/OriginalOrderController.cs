@@ -113,7 +113,7 @@ namespace StockService.Controllers
                             };
                             await _orderRepo.AddAsync(newOrderExecuted);
 
-                            //change information of the stock unit
+                            //change information of a stock unit
                             var theseller = originalorder.User;
                             var stockunit = theseller.StockUnits.Where(su => su.Stock == originalorder.Stock).Where(su => su.StockUnitStatus == StockUnitStatusEnum.InMarket).ToList()[0];
                             stockunit.User = user;
@@ -130,8 +130,6 @@ namespace StockService.Controllers
                             originalorder.OriginalOrderStatus=OriginalOrderStatusEnum.Executed;
                             await _originalOrderRepo.SaveChangesAsync();                       
                         }
-
-
                     }
                     //needed quantity to db
                     originalorderModel.RemainingQuantity = quantityneeded;

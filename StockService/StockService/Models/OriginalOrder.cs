@@ -22,6 +22,8 @@ namespace StockService.Models
         [Required]
         public DateTime DateDeposit { get; set; }
         public virtual List<Order> Orders { get; set; } = new List<Order>();
+        [Required]
+        public string UserId { get; set; }
         public virtual User User { get; set; }
         [Required]
         public string StockId { get; set; }

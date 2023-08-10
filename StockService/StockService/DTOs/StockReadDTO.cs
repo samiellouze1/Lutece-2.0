@@ -10,7 +10,5 @@ namespace StockService.DTOs
         public string Name { get; set; }
         public double AveragePrice { get; set; }
         public int Quantity { get; set; }
-        public virtual List<StockUnit> StockUnits { get; set; } = new List<StockUnit>();
-        public virtual List<OriginalOrder> OriginalOrders { get; set; } = new List<OriginalOrder>();
     }
 }
