@@ -1,5 +1,6 @@
 using Hangfire;
 using Hangfire.MemoryStorage;
+using SimulatorService.SyncDataServices.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,5 +34,7 @@ app.UseHangfireDashboard("/dashboard");
 app.UseAuthorization();
 
 app.MapControllers();
+
+
 
 app.Run();

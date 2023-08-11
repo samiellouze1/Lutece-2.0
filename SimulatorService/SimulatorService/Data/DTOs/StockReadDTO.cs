@@ -1,4 +1,4 @@
-﻿namespace StockService.Data.DTOs
+﻿namespace SimulatorService.Data.DTOs
 {
     public class StockReadDTO
     {

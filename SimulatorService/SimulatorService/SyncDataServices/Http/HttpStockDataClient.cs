@@ -12,9 +12,18 @@ namespace SimulatorService.SyncDataServices.Http
             _httpClient = httpClient;
             _configuration = configuration;
         }
-        public Task GetInformationFromStock()
+        public async Task GetInformationFromStock()
         {
-            throw new NotImplementedException();
+            string apiUrl= $"{_configuration["StockService"]}" + "/Stock";
+            HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                List<StockReadDTO> stockList = await response.Content.ReadFromJsonAsync<List<StockReadDTO>>();
+            }
+            else
+            {
+                Console.WriteLine("API request was not successfull. Status Code: "+ response.StatusCode);
+            }
         }
 
         public Task PostOriginalOrderToStock(OriginalOrderCreateDto originalOrder)
