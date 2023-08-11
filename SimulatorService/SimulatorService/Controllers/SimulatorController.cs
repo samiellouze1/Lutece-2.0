@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Hangfire;
+using SimulatorService.SyncDataServices.Http;
 
 namespace SimulatorService.Controllers
 {
@@ -9,16 +10,18 @@ namespace SimulatorService.Controllers
     {
         private readonly IBackgroundJobClient _jobClient;
         private readonly IRecurringJobManager _recurringJobManager;
-        public SimulatorController(IBackgroundJobClient jobClient, IRecurringJobManager recurringJobManager)
+        private readonly IStockDataClient _stockDataClient;
+        public SimulatorController(IBackgroundJobClient jobClient, IRecurringJobManager recurringJobManager, IStockDataClient stockDataClient)
         {
             _jobClient = jobClient;
             _recurringJobManager = recurringJobManager;
+            _stockDataClient = stockDataClient;
         }
         [HttpGet]
         [Route("Recurring")]
         public string RecurringJobs()
         {
-            _recurringJobManager.AddOrUpdate("recurrentjob",() => Console.WriteLine("Welcome user in Recurring Job Demo!"), Cron.Minutely);
+            _recurringJobManager.AddOrUpdate("recurrentjob",() => _stockDataClient.GetInformationFromStock(), Cron.Minutely);
             return "Welcome user in Recurring Job Demo!";
         }
     }

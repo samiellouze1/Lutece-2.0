@@ -19,6 +19,10 @@ namespace SimulatorService.SyncDataServices.Http
             if (response.IsSuccessStatusCode)
             {
                 List<StockReadDTO> stockList = await response.Content.ReadFromJsonAsync<List<StockReadDTO>>();
+                foreach (var stockitem in stockList)
+                {
+                    Console.WriteLine("&&&&&&&&&&&&&&");
+                }
             }
             else
             {
