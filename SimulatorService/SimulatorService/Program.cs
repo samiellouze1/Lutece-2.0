@@ -18,6 +18,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient<IStockDataClient, HttpStockDataClient>();
+
 
 var app = builder.Build();
 
@@ -30,6 +32,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHangfireDashboard("/dashboard");
+
 
 app.UseAuthorization();
 

@@ -14,7 +14,8 @@ namespace SimulatorService.SyncDataServices.Http
         }
         public async Task GetInformationFromStock()
         {
-            string apiUrl= $"{_configuration["StockService"]}" + "/Stock";
+            string apiUrl= $"{_configuration["StockService"]}" + "Stock";
+            Console.WriteLine(apiUrl);
             HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
             if (response.IsSuccessStatusCode)
             {
