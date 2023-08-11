@@ -39,6 +39,7 @@ namespace StockService.Controllers
                 return NotFound();
             }
         }
+
         [HttpPost]
         public async Task<ActionResult<StockReadDTO>> CreateStock(StockCreateDTO stockcreatedto)
         {
