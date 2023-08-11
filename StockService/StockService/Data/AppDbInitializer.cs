@@ -14,6 +14,7 @@ namespace StockService.Data
             using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
+                #region 
                 if (!context.Stocks.Any()) 
                 {
                     context.AddRange(new List<Stock>()
@@ -25,6 +26,7 @@ namespace StockService.Data
                     });
                     context.SaveChanges();
                 }
+                #region stockunits
                 if (!context.StockUnits.Any()) 
                 {
                     var stock1 = context.Stocks.Find("1");
@@ -54,6 +56,7 @@ namespace StockService.Data
                     StockUnitCreation(user4, stock2,800, context);
                     StockUnitCreation(user4, stock1,50, context);
                 }
+                #endregion
             }
         }
         public static async Task SeedUsersAndRolesAsync(IApplicationBuilder applicationBuilder)
