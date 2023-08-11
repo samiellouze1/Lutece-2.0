@@ -129,7 +129,7 @@ namespace StockService.Controllers
                             await _createooService.ChangeInformationOfAStockUnit(originalorder, user);
                             if (executedoriginalorder)
                             {
-
+                                await _createooService.ExecuteOriginalOrder(originalorder);
                             }
                         }
                     }
