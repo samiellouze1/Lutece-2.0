@@ -1,8 +1,8 @@
-﻿using StockService.Data.IRepo;
-using StockService.Data.Repository;
+﻿using StockService.Data;
 using StockService.Models;
+using StockService.Repo.IRepo;
 
-namespace StockService.Data.Repo
+namespace StockService.Repo.Repo
 {
     public class OrderRepo: EntityBaseRepository<Order>,IOrderRepo
     {

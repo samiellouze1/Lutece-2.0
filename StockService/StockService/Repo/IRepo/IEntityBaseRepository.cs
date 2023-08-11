@@ -1,7 +1,7 @@
 ﻿using StockService.Models;
 using System.Linq.Expressions;
 
-namespace StockService.Data.IRepo
+namespace StockService.Repo.IRepo
 {
     public interface IEntityBaseRepository<T> where T : class, IEntityBase, new()
     {

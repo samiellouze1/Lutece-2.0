@@ -2,7 +2,7 @@
 using StockService.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace StockService.DTOs
+namespace StockService.Data.DTOs
 {
     public class OriginalOrderCreateDTO
     {

@@ -2,9 +2,9 @@
 using StockService.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace StockService.DTOs
+namespace StockService.Data.DTOs
 {
-    public class StockReadDTO
+    public class StockCreateDTO
     {
         public string Id{ get; set; }
         public string Name { get; set; }

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using StockService.DTOs;
+using StockService.Data.DTOs;
 using StockService.Models;
 
-namespace StockService.Profiles
+namespace StockService.Data.Profiles
 {
     public class UserProfile : Profile
     {

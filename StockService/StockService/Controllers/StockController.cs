@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using StockService.Data.IRepo;
-using StockService.Data.Repo;
-using StockService.DTOs;
+using StockService.Data.DTOs;
 using StockService.Models;
+using StockService.Repo.IRepo;
 
 namespace StockService.Controllers
 {

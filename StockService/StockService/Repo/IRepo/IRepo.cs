@@ -1,6 +1,6 @@
 ﻿using StockService.Models;
 
-namespace StockService.Data.IRepo
+namespace StockService.Repo.IRepo
 {
     public interface IOrderRepo: IEntityBaseRepository<Order>
     {

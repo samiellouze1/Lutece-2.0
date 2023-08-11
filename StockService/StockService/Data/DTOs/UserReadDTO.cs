@@ -1,7 +1,7 @@
 ﻿using StockService.Data.Enums;
 using StockService.Models;
 
-namespace StockService.DTOs
+namespace StockService.Data.DTOs
 {
     public class UserReadDTO
     {

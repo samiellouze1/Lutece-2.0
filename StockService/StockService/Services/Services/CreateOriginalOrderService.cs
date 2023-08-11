@@ -1,9 +1,9 @@
 ﻿using StockService.Data.Enums;
-using StockService.Data.IRepo;
-using StockService.Data.IServices;
 using StockService.Models;
+using StockService.Repo.IRepo;
+using StockService.Services.IServices;
 
-namespace StockService.Data.Services
+namespace StockService.Services.Services
 {
     public class CreateOriginalOrderService : ICreateOriginalOrderService
     {

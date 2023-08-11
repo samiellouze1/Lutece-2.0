@@ -1,7 +1,7 @@
 ﻿using StockService.Data.Enums;
 using StockService.Models;
 
-namespace StockService.Data.IServices
+namespace StockService.Services.IServices
 {
     public interface ICreateOriginalOrderService
     {

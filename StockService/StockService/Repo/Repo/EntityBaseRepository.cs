@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using StockService.Data.IRepo;
 using StockService.Data;
 using StockService.Models;
+using StockService.Repo.IRepo;
 
-namespace StockService.Data.Repository
+namespace StockService.Repo.Repo
 {
     public class EntityBaseRepository<T> : IEntityBaseRepository<T> where T : class, IEntityBase, new()
     {

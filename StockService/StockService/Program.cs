@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using StockService.Data;
 using StockService.Data.Extensions;
-using StockService.Data.IRepo;
-using StockService.Data.IServices;
-using StockService.Data.Repo;
-using StockService.Data.Services;
 using StockService.Models;
+using StockService.Repo.IRepo;
+using StockService.Repo.Repo;
+using StockService.Services.IServices;
+using StockService.Services.Services;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);

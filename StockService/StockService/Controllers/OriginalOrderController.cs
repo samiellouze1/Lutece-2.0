@@ -2,12 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using StockService.Data.DTOs;
 using StockService.Data.Enums;
-using StockService.Data.IRepo;
-using StockService.Data.IServices;
-using StockService.DTOs;
 using StockService.Models;
-
+using StockService.Repo.IRepo;
+using StockService.Services.IServices;
 
 namespace StockService.Controllers
 {
