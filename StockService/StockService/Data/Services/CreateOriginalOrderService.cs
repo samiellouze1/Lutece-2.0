@@ -30,15 +30,19 @@ namespace StockService.Data.Services
             originalorderModel.RemainingQuantity = quantityneeded;
             await _originalOrderRepo.SaveChangesAsync();
         }
-        public async Task<List<OriginalOrder>> GetCorrespondantSellingOrders(OriginalOrder originalorderModel)
+        public async Task<List<OriginalOrder>> GetCorrespondantOrders(OriginalOrder originalorderModel,OrderTypeEnum orderTypeEnum)
         {
             var OriginalOrders = await _originalOrderRepo.GetAllAsync(oo => oo.Stock, oo => oo.Orders, oo => oo.User);
             var sellingOriginalOrdersList = OriginalOrders.
-                                                            Where(oo => oo.OrderType == OrderTypeEnum.Sell).
+                                                            Where(oo => oo.OrderType == orderTypeEnum).
                                                             Where(oo => oo.Stock == originalorderModel.Stock).
                                                             Where(oo => oo.OriginalOrderStatus == OriginalOrderStatusEnum.Active).
                                                             OrderBy(oo => oo.Price).
                                                             ToList();
+            if (orderTypeEnum == OrderTypeEnum.Buy) 
+            { 
+                sellingOriginalOrdersList=sellingOriginalOrdersList.OrderByDescending(o=>o.Price).ToList();
+            }
             return sellingOriginalOrdersList;
         }
         public async Task ExecuteOrder(Order order, double Price)

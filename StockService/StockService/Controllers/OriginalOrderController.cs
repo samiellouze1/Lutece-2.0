@@ -73,7 +73,7 @@ namespace StockService.Controllers
                 }
                 else
                 {
-                    var sellingOriginalOrdersList = await _createooService.GetCorrespondantSellingOrders(originalorderModel);
+                    var sellingOriginalOrdersList = await _createooService.GetCorrespondantOrders(originalorderModel,OrderTypeEnum.Sell);
                     var quantityneeded = originalorderModel.OriginalQuantity;
                     foreach (var originalorder in sellingOriginalOrdersList)
                     {
@@ -113,11 +113,31 @@ namespace StockService.Controllers
                 }
                 else
                 {
-                    //create the original order
-                    //look for corresponding orders
-                    //execute them
-                    //change state
-                    //laisser le reste
+                    var correspondingoriginalorders = await _createooService.GetCorrespondantOrders(originalorderModel, OrderTypeEnum.Buy);
+                    var neededquantity = originalorderModel.OriginalQuantity;
+                    foreach ( var originalorder in correspondingoriginalorders)
+                    {
+                        var executedoriginalorder = true;
+                        foreach ( var order in originalorder.Orders)
+                        {
+                            if (neededquantity==0)
+                            {
+                                executedoriginalorder = false;
+                                break;
+                            }
+                            await _createooService.ExecuteOrder(order,order.OriginalOrder.Price);
+                            await _createooService.ChangeInformationOfAStockUnit(originalorder, user);
+                            if (executedoriginalorder)
+                            {
+
+                            }
+                        }
+                    }
+                    await _createooService.StoreRemainingQuantity(originalorderModel, neededquantity);
+                    for (int i = 0;i< originalorderModel.RemainingQuantity;i++)
+                    {
+                        await _createooService.CreateInMarketOrder(originalorderModel);
+                    }
                 }
             }
             await _originalOrderRepo.AddAsync(originalorderModel);
