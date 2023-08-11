@@ -1,4 +1,4 @@
-﻿using SimulatorService.Models;
+﻿using SimulatorService.Data.DTOs;
 
 namespace SimulatorService.SyncDataServices.Http
 {
