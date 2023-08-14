@@ -15,7 +15,7 @@ namespace StockService.Data
             {
                 var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
                 #region stocks 
-                if (!context.Stocks.Any()) 
+                if (!context.Stocks.Any())
                 {
                     context.AddRange(new List<Stock>()
                     {
@@ -38,32 +38,34 @@ namespace StockService.Data
                 var user2 = context.Users.Find("2");
                 var user3 = context.Users.Find("3");
                 var user4 = context.Users.Find("4");
-                if (!context.StockUnits.Any()) 
+                if (!context.StockUnits.Any())
                 {
-                    StockUnitCreation(user1, stock4,50, context);
-                    StockUnitCreation(user1, stock3,50, context);
-                    StockUnitCreation(user1, stock2,10, context);
-                    StockUnitCreation(user1, stock1,100, context);
-                    StockUnitCreation(user2, stock4,50, context);
-                    StockUnitCreation(user2, stock3,50, context);
-                    StockUnitCreation(user2, stock2,70, context);
-                    StockUnitCreation(user2, stock1,120, context);
-                    StockUnitCreation(user3, stock4,50, context);
-                    StockUnitCreation(user3, stock3,100, context);
-                    StockUnitCreation(user3, stock2,120, context);
-                    StockUnitCreation(user3, stock1,130, context);
-                    StockUnitCreation(user4, stock4,50, context);
-                    StockUnitCreation(user4, stock3,100, context);
-                    StockUnitCreation(user4, stock2,800, context);
-                    StockUnitCreation(user4, stock1,50, context);
+                    StockUnitCreation(user1, stock4, 50, context);
+                    StockUnitCreation(user1, stock3, 50, context);
+                    StockUnitCreation(user1, stock2, 10, context);
+                    StockUnitCreation(user1, stock1, 100, context);
+                    StockUnitCreation(user2, stock4, 50, context);
+                    StockUnitCreation(user2, stock3, 50, context);
+                    StockUnitCreation(user2, stock2, 70, context);
+                    StockUnitCreation(user2, stock1, 120, context);
+                    StockUnitCreation(user3, stock4, 50, context);
+                    StockUnitCreation(user3, stock3, 100, context);
+                    StockUnitCreation(user3, stock2, 120, context);
+                    StockUnitCreation(user3, stock1, 130, context);
+                    StockUnitCreation(user4, stock4, 50, context);
+                    StockUnitCreation(user4, stock3, 100, context);
+                    StockUnitCreation(user4, stock2, 800, context);
+                    StockUnitCreation(user4, stock1, 50, context);
                 }
                 #endregion
 
                 #region originalorders
                 if (!context.OriginalOrders.Any())
                 {
-                    OriginalOrderCreation(user1, stock1,10,150,context);
-                    OriginalOrderCreation(user2, stock2, 20, 170, context);
+                    SellingOriginalOrderCreation(user1, stock1, 10, 150, context);
+                    SellingOriginalOrderCreation(user2, stock1, 20, 170, context);
+                    BuyingOriginalOrderCreation(user1, stock2, 10, 150, context);
+                    BuyingOriginalOrderCreation(user2, stock2, 20, 170, context);
                 }
                 #endregion
             }
@@ -79,15 +81,15 @@ namespace StockService.Data
 
 
                 var user1username = "user1@gdp.com";
-                var user1= await userManager.FindByNameAsync(user1username);
-                if (user1==null)
+                var user1 = await userManager.FindByNameAsync(user1username);
+                if (user1 == null)
                 {
                     var newUser1 = new User()
                     {
-                        Id="1",
-                        UserName=user1username,
-                        UserType=UserTypeEnum.Dummy,
-                        Balance= 10_000
+                        Id = "1",
+                        UserName = user1username,
+                        UserType = UserTypeEnum.Dummy,
+                        Balance = 10_000
                     };
                     await userManager.CreateAsync(newUser1, "User1123@");
                     //AddToRole
@@ -151,16 +153,50 @@ namespace StockService.Data
                 context.SaveChanges();
             }
         }
-        private static void OriginalOrderCreation (User user, Stock stock,int quantity, double price, AppDbContext context)
+        private static void SellingOriginalOrderCreation(User user, Stock stock, int quantity, double price, AppDbContext context)
         {
-            var result = context.Add(new OriginalOrder() 
-            { 
+            var stockunits = context.StockUnits.Where(su => su.Stock == stock && su.User == user).OrderBy(su => su.DateBought).ToList();
+            for (int i = 0; i < quantity; i++)
+            {
+                stockunits[i].StockUnitStatus = StockUnitStatusEnum.InMarket;
+                context.SaveChanges();
+            }
+            var orders = new List<Order>();
+            for (int i = 0; i < quantity; i++)
+            {
+                orders.Add(new Order() { OrderStatus = OrderStatusEnum.Active });
+            }
+            var result = context.Add(new OriginalOrder()
+            {
                 Stock = stock,
                 Price = price,
                 OriginalQuantity = quantity,
-                User=user,
-                OrderType=OrderTypeEnum.Sell,
-                RemainingQuantity=quantity
+                User = user,
+                OriginalOrderType = OriginalOrderTypeEnum.Sell,
+                RemainingQuantity = quantity,
+                Orders = orders
+            });
+            context.SaveChanges();
+        }
+        private static void BuyingOriginalOrderCreation(User user, Stock stock, int quantity, double price, AppDbContext context)
+        {
+            var orders = new List<Order>();
+            for (int i = 0; i < quantity; i++)
+            {
+                orders.Add(new Order()
+                {
+                    OrderStatus = OrderStatusEnum.Active,
+                });
+            }
+            var result = context.Add(new OriginalOrder()
+            {
+                Stock = stock,
+                Price = price,
+                OriginalQuantity = quantity,
+                User = user,
+                OriginalOrderType = OriginalOrderTypeEnum.Buy,
+                RemainingQuantity = quantity,
+                Orders = orders
             });
             context.SaveChanges();
         }

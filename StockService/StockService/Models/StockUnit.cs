@@ -14,7 +14,7 @@ namespace StockService.Models
         public virtual User User { get; set; }
         public virtual Stock Stock { get;set; }
         [Required]
-        public StockUnitStatusEnum StockUnitStatus { get; set; }
+        public StockUnitStatusEnum StockUnitStatus { get; set; } = StockUnitStatusEnum.InStock;
         [Required]
         public DateTime DateBought { get; set; }
     }

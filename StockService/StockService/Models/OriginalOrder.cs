@@ -12,7 +12,7 @@ namespace StockService.Models
 
         public string Id { get; set; }
         [Required]
-        public OrderTypeEnum OrderType { get; set; }
+        public OriginalOrderTypeEnum OriginalOrderType { get; set; }
         [Required]
         public double Price { get; set; }
         [Required]

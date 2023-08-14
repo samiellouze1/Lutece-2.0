@@ -30,7 +30,7 @@ namespace StockService.Controllers
         public async Task<ActionResult<IEnumerable<OriginalOrderReadDTO>>> GetOriginalOrders()
         {
             Console.WriteLine("--------- Getting Original Orders --------");
-            var originalorders = await _originalOrderRepo.GetAllAsync();
+            var originalorders = await _originalOrderRepo.GetAllAsync(oo=>oo.Orders);
             return Ok(_mapper.Map<IEnumerable<OriginalOrderReadDTO>>(originalorders));
         }
         [HttpGet("{id}", Name = "GetOriginalOrderById")]
@@ -64,7 +64,7 @@ namespace StockService.Controllers
             originalorderModel.User = user;
             originalorderModel.RemainingQuantity = ordercreatedto.OriginalQuantity;
             //Buying Order
-            if (originalorderModel.OrderType == OrderTypeEnum.Buy)
+            if (originalorderModel.OriginalOrderType == OriginalOrderTypeEnum.Buy)
             {
                 if (user.Balance < originalorderModel.Price * originalorderModel.OriginalQuantity)
                 {
@@ -72,9 +72,9 @@ namespace StockService.Controllers
                 }
                 else
                 {
-                    var sellingOriginalOrdersList = await _createooService.GetCorrespondantOrders(originalorderModel,OrderTypeEnum.Sell);
+                    var sellingOriginalOrdersList = await _createooService.GetCorrespondantOrders(originalorderModel,OriginalOrderTypeEnum.Buy);
                     var quantityneeded = originalorderModel.OriginalQuantity;
-                    foreach (var originalorder in sellingOriginalOrdersList)
+                    foreach (var originalorder in sellingOriginalOrdersList.Where(oo=>oo.User!=user))
                     {
                         var originalorderexecuted = true;
                         foreach (var order in originalorder.Orders.Where(o => o.OrderStatus == OrderStatusEnum.Active))
@@ -95,6 +95,10 @@ namespace StockService.Controllers
                         }
                     }
                     await _createooService.StoreRemainingQuantity(originalorderModel, quantityneeded);
+                    if (quantityneeded == 0)
+                    {
+                        await _createooService.ExecuteOriginalOrder(originalorderModel);
+                    }
                     for (int i = 0; i < quantityneeded; i++)
                     {
                         await _createooService.CreateInMarketOrder(originalorderModel);
@@ -104,17 +108,16 @@ namespace StockService.Controllers
             //selling order
             else
             {
-                var stockunits = await _createooService.GetAllCorrespondingStockUnits(originalorderModel);
-                var stockunittolist = stockunits.ToList();
+                var stockunittolist = await _createooService.GetAllCorrespondingStockUnits(originalorderModel);
                 if (stockunittolist.Count < originalorderModel.OriginalQuantity)
                 {
                     return BadRequest("you do not have enough stock units to execute this order");
                 }
                 else
                 {
-                    var correspondingoriginalorders = await _createooService.GetCorrespondantOrders(originalorderModel, OrderTypeEnum.Buy);
+                    var correspondingoriginalorders = await _createooService.GetCorrespondantOrders(originalorderModel, OriginalOrderTypeEnum.Sell);
                     var neededquantity = originalorderModel.OriginalQuantity;
-                    foreach ( var originalorder in correspondingoriginalorders)
+                    foreach ( var originalorder in correspondingoriginalorders.Where(oo=>oo.User!=user).ToList())
                     {
                         var executedoriginalorder = true;
                         foreach ( var order in originalorder.Orders)
@@ -125,21 +128,25 @@ namespace StockService.Controllers
                                 break;
                             }
                             await _createooService.ExecuteOrder(order,order.OriginalOrder.Price);
-                            await _createooService.ChangeInformationOfAStockUnit(originalorder, user);
+                            Console.WriteLine("order executed");
+                            await _createooService.ChangeInformationOfAStockUnitFromUsertoUser(originalorder, user);
+                            Console.WriteLine("stock unit information done");
                             if (executedoriginalorder)
                             {
                                 await _createooService.ExecuteOriginalOrder(originalorder);
                             }
+                            neededquantity -= 1;
                         }
                     }
                     await _createooService.StoreRemainingQuantity(originalorderModel, neededquantity);
                     for (int i = 0;i< originalorderModel.RemainingQuantity;i++)
                     {
+
+                        await _createooService.ChangeInformationOfAStockUnit(originalorderModel);
                         await _createooService.CreateInMarketOrder(originalorderModel);
                     }
                 }
             }
-            await _originalOrderRepo.AddAsync(originalorderModel);
             var orignalorderreaddto = _mapper.Map<OriginalOrderReadDTO>(originalorderModel);
             return CreatedAtRoute(nameof(GetOriginalOrderById), new { id = orignalorderreaddto.Id }, orignalorderreaddto);
         }

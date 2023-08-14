@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using StockService.Models;
 using StockService.Repo.IRepo;
+using StockService.Repo.Repo;
 
 namespace StockService.Controllers
 {
@@ -10,40 +11,19 @@ namespace StockService.Controllers
     [ApiController]
     public class StockUnitController : ControllerBase
     {
-        private readonly IUserRepo _userRepo;
-        private readonly IStockRepo _stockRepo;
+        private readonly IStockUnitRepo _stockUnitRepo;
         private readonly IMapper _mapper;
-        public StockUnitController(IMapper mapper, IStockRepo stockRepo, IUserRepo userRepo)
+        public StockUnitController(IMapper mapper,IStockUnitRepo stockUnitRepo)
         {
-            _userRepo = userRepo;
-            _stockRepo = stockRepo;
+            _stockUnitRepo = stockUnitRepo;
             _mapper = mapper;
         }
-        [HttpGet("/Stock/{id}", Name = "GetStockUnitsByStockId")]
-        public async Task<ActionResult<List<StockUnit>>> GetStockUnitsByStockId(string id)
+        [HttpGet("/{stockid}/{userid}", Name = "GetStockUnitsByStockId")]
+        public async Task<ActionResult<int>> GetStockUnitsByStockId(string stockid, string userid)
         {
-            var stockitem = await _stockRepo.GetByIdAsync(id, s => s.StockUnits);
-            if (stockitem != null)
-            {
-                return Ok(stockitem.StockUnits);
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
-        [HttpGet("/User/{id}", Name = "GetStockUnitsByUserId")]
-        public async Task<ActionResult<List<StockUnit>>> GetStockUnitsByUserId(string id)
-        {
-            var useritem = await _userRepo.GetByIdAsync(id, s=>s.StockUnits);
-            if ( useritem != null )
-            {
-                return Ok(useritem.StockUnits);
-            }
-            else
-            {
-                return NotFound();
-            }
+            var allstockunitss = await _stockUnitRepo.GetAllAsync(s => s.Stock,s=>s.User);
+            var specificstockunits = allstockunitss.Where(s=>s.Stock.Id == stockid).Where( s=>s.User.Id== userid).ToList();
+            return Ok(specificstockunits.Count);
         }
     }
 }

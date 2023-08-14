@@ -12,7 +12,7 @@ namespace StockService.Models
 
         public string Id{ get; set; }
         [Required]
-        public OrderStatusEnum OrderStatus { get; set; }
+        public OrderStatusEnum OrderStatus { get; set; } = OrderStatusEnum.Active;
         public Nullable<double> ExecutedPrice { get; set; }
         public Nullable<DateTime> DateExecution { get; set; }
         public virtual OriginalOrder OriginalOrder { get; set; }

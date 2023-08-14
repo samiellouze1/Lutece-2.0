@@ -7,7 +7,7 @@ namespace StockService.Data.DTOs
     public class OriginalOrderReadDTO
     {
         public string Id { get; set; }
-        public OrderTypeEnum OrderType { get; set; }
+        public OriginalOrderTypeEnum OriginalOrderType { get; set; }
         public double Price { get; set; }
         public int OriginalQuantity { get; set; }
         public int RemainingQuantity { get; set; }

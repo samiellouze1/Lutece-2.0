@@ -30,18 +30,29 @@ namespace StockService.Services.Services
             originalorderModel.RemainingQuantity = quantityneeded;
             await _originalOrderRepo.SaveChangesAsync();
         }
-        public async Task<List<OriginalOrder>> GetCorrespondantOrders(OriginalOrder originalorderModel,OrderTypeEnum orderTypeEnum)
+        public async Task<List<OriginalOrder>> GetCorrespondantOrders(OriginalOrder originalorderModel,OriginalOrderTypeEnum orderTypeEnum)
         {
-            var OriginalOrders = await _originalOrderRepo.GetAllAsync(oo => oo.Stock, oo => oo.Orders, oo => oo.User);
+            var OriginalOrders = await _originalOrderRepo.GetAllAsync(oo => oo.Stock.StockUnits, oo => oo.Orders, oo => oo.User.StockUnits);
             var sellingOriginalOrdersList = OriginalOrders.
-                                                            Where(oo => oo.OrderType == orderTypeEnum).
-                                                            Where(oo => oo.Stock == originalorderModel.Stock).
+                                                            Where(oo => oo.OriginalOrderType != orderTypeEnum).
+                                                            Where(oo => oo.StockId == originalorderModel.StockId).
                                                             Where(oo => oo.OriginalOrderStatus == OriginalOrderStatusEnum.Active).
-                                                            OrderBy(oo => oo.Price).
                                                             ToList();
-            if (orderTypeEnum == OrderTypeEnum.Buy) 
+            if (orderTypeEnum == OriginalOrderTypeEnum.Buy) 
             { 
-                sellingOriginalOrdersList=sellingOriginalOrdersList.OrderByDescending(o=>o.Price).ToList();
+                sellingOriginalOrdersList=sellingOriginalOrdersList.
+                    Where(oo=>oo.Price<originalorderModel.Price).
+                    OrderBy(o=>o.Price).
+                    OrderByDescending(o=>o.DateDeposit).
+                    ToList();
+            }
+            else
+            {
+                sellingOriginalOrdersList = sellingOriginalOrdersList.
+                    Where(oo => oo.Price > originalorderModel.Price).
+                    OrderByDescending(o => o.Price).
+                    OrderByDescending(o => o.DateDeposit).
+                    ToList();
             }
             return sellingOriginalOrdersList;
         }
@@ -62,27 +73,48 @@ namespace StockService.Services.Services
             };
             await _orderRepo.AddAsync(newOrderExecuted);
         }
-        public async Task ChangeInformationOfAStockUnit(OriginalOrder originalorder, User user)
+        public async Task ChangeInformationOfAStockUnit(OriginalOrder originalorder, User thebuyer)
         {
             var theseller = originalorder.User;
-            var stockunit = theseller.StockUnits.Where(su => su.Stock == originalorder.Stock).Where(su => su.StockUnitStatus == StockUnitStatusEnum.InMarket).ToList()[0];
-            stockunit.User = user;
+            var stockunits = theseller.StockUnits.Where(su => su.Stock == originalorder.Stock).ToList();
+            stockunits = stockunits.Where(su => su.StockUnitStatus == StockUnitStatusEnum.InMarket).ToList();
+            var stockunit = stockunits[0];
+            stockunit.User = thebuyer;
             stockunit.StockUnitStatus = StockUnitStatusEnum.InStock;
             stockunit.DateBought = DateTime.Now;
             await _stockUnitRepo.SaveChangesAsync();
         }
-        public async Task ExecuteOriginalOrder(OriginalOrder originalorder)
+        public async Task ChangeInformationOfAStockUnitFromUsertoUser(OriginalOrder originalorder, User thebuyer)
         {
+            var theseller = originalorder.User;
+            var stockunits = theseller.StockUnits.Where(su => su.Stock == originalorder.Stock).ToList();
+            stockunits = stockunits.Where(su => su.StockUnitStatus == StockUnitStatusEnum.InStock).ToList();
+            var stockunit = stockunits[0];
+            stockunit.User = thebuyer;
+            stockunit.DateBought = DateTime.Now;
+            await _stockUnitRepo.SaveChangesAsync();
+        }
+        public async Task ChangeInformationOfAStockUnit(OriginalOrder originalorder)
+        {
+            var theowner = originalorder.User;
+            var stockunits = theowner.StockUnits.Where(su => su.Stock == originalorder.Stock).ToList();
+            stockunits=stockunits.Where(su => su.StockUnitStatus == StockUnitStatusEnum.InStock).OrderBy(su=>su.DateBought).ToList();
+            var stockunit = stockunits[0];
+            stockunit.StockUnitStatus = StockUnitStatusEnum.InMarket;
+            await _stockUnitRepo.SaveChangesAsync();
+        }
+        public async Task ExecuteOriginalOrder(OriginalOrder originalorder)
+        {   
             originalorder.OriginalOrderStatus = OriginalOrderStatusEnum.Executed;
             await _originalOrderRepo.SaveChangesAsync();
         }
-
         public async Task<List<StockUnit>> GetAllCorrespondingStockUnits(OriginalOrder originalorderModel)
         {
             var allstockunits = await _stockUnitRepo.GetAllAsync();
             var stockunitlist = allstockunits.
                 Where(su => su.Stock == originalorderModel.Stock).
                 Where(su => su.User == originalorderModel.User).
+                Where(su=>su.StockUnitStatus==StockUnitStatusEnum.InStock).
                 ToList();
             return stockunitlist;
         }
