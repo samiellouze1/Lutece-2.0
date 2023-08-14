@@ -7,7 +7,7 @@ namespace StockService.Data.DTOs
     {
         public string Id{ get; set; }
         public UserTypeEnum UserType { get; set; }
-        public string Email { get; set; }
+        public string UserName { get; set; }
         public double Balance { get; set; }
     }
 }

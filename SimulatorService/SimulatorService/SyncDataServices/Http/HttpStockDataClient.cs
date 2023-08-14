@@ -22,6 +22,15 @@ namespace SimulatorService.SyncDataServices.Http
                 List<StockReadDTO> stockList = await response.Content.ReadFromJsonAsync<List<StockReadDTO>>();
                 foreach (var stockitem in stockList)
                 {
+                    //lezem nekhthou el stockunits
+                    //nekhthou stock random
+                    //nekhthou mennou proprietaire random
+                    //nbi3ou mennou quantite random
+
+                    //lezem nekhthou stock random
+                    //nekhthou proprietaire random 
+                    //nechriwlou quantite random
+
                     Console.WriteLine("&&&&&&&&&&&&&&");
                 }
             }

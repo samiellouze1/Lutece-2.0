@@ -14,7 +14,7 @@ namespace StockService.Data
             using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
-                #region 
+                #region stocks 
                 if (!context.Stocks.Any()) 
                 {
                     context.AddRange(new List<Stock>()
@@ -26,19 +26,20 @@ namespace StockService.Data
                     });
                     context.SaveChanges();
                 }
+                #endregion
+
                 #region stockunits
+                var stock1 = context.Stocks.Find("1");
+                var stock2 = context.Stocks.Find("2");
+                var stock3 = context.Stocks.Find("3");
+                var stock4 = context.Stocks.Find("4");
+
+                var user1 = context.Users.Find("1");
+                var user2 = context.Users.Find("2");
+                var user3 = context.Users.Find("3");
+                var user4 = context.Users.Find("4");
                 if (!context.StockUnits.Any()) 
                 {
-                    var stock1 = context.Stocks.Find("1");
-                    var stock2 = context.Stocks.Find("2");
-                    var stock3 = context.Stocks.Find("3");
-                    var stock4 = context.Stocks.Find("4");
-
-                    var user1 = context.Users.Find("1");
-                    var user2 = context.Users.Find("2");
-                    var user3 = context.Users.Find("3");
-                    var user4 = context.Users.Find("4");
-
                     StockUnitCreation(user1, stock4,50, context);
                     StockUnitCreation(user1, stock3,50, context);
                     StockUnitCreation(user1, stock2,10, context);
@@ -55,6 +56,14 @@ namespace StockService.Data
                     StockUnitCreation(user4, stock3,100, context);
                     StockUnitCreation(user4, stock2,800, context);
                     StockUnitCreation(user4, stock1,50, context);
+                }
+                #endregion
+
+                #region originalorders
+                if (!context.OriginalOrders.Any())
+                {
+                    OriginalOrderCreation(user1, stock1,10,150,context);
+                    OriginalOrderCreation(user2, stock2, 20, 170, context);
                 }
                 #endregion
             }
@@ -141,6 +150,19 @@ namespace StockService.Data
                     );
                 context.SaveChanges();
             }
+        }
+        private static void OriginalOrderCreation (User user, Stock stock,int quantity, double price, AppDbContext context)
+        {
+            var result = context.Add(new OriginalOrder() 
+            { 
+                Stock = stock,
+                Price = price,
+                OriginalQuantity = quantity,
+                User=user,
+                OrderType=OrderTypeEnum.Sell,
+                RemainingQuantity=quantity
+            });
+            context.SaveChanges();
         }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using StockService.Data.DTOs;
 using StockService.Data.Enums;
 using StockService.Models;
 using StockService.Repo.IRepo;
+using StockService.Repo.Repo;
 
 namespace StockService.Controllers
 {
@@ -83,6 +85,13 @@ namespace StockService.Controllers
             {
                 return BadRequest("User already exists");
             }
+        }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<UserReadDTO>>> GetUsers()
+        {
+            Console.WriteLine("--------- Getting users --------");
+            var stocks = await _userRepo.GetAllAsync();
+            return Ok(_mapper.Map<IEnumerable<UserReadDTO>>(stocks));
         }
     }
 }

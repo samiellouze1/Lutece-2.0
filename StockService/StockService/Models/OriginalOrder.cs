@@ -20,7 +20,9 @@ namespace StockService.Models
         [Required]
         public int RemainingQuantity { get; set; }
         [Required]
-        public DateTime DateDeposit { get; set; }
+        public DateTime DateDeposit { get; set; } = DateTime.Now;
+        [Required]
+        public OriginalOrderStatusEnum OriginalOrderStatus { get; set; } = OriginalOrderStatusEnum.Active;
         public virtual List<Order> Orders { get; set; } = new List<Order>();
         [Required]
         public string UserId { get; set; }
@@ -28,7 +30,6 @@ namespace StockService.Models
         [Required]
         public string StockId { get; set; }
         public virtual Stock Stock { get; set; }
-        [Required]
-        public OriginalOrderStatusEnum OriginalOrderStatus { get; set; }
+
     }
 }
