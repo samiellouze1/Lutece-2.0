@@ -1,9 +1,5 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-
-using StockService.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using StockService.Repo.IRepo;
-using StockService.Repo.Repo;
 
 namespace StockService.Controllers
 {
@@ -12,13 +8,11 @@ namespace StockService.Controllers
     public class StockUnitController : ControllerBase
     {
         private readonly IStockUnitRepo _stockUnitRepo;
-        private readonly IMapper _mapper;
-        public StockUnitController(IMapper mapper,IStockUnitRepo stockUnitRepo)
+        public StockUnitController(IStockUnitRepo stockUnitRepo) //,IMapper mapper)
         {
             _stockUnitRepo = stockUnitRepo;
-            _mapper = mapper;
         }
-        [HttpGet("/{stockid}/{userid}", Name = "GetStockUnitsByStockId")]
+        [HttpGet("{stockid}/{userid}", Name = "GetStockUnitsByStockId")]
         public async Task<ActionResult<int>> GetStockUnitsByStockId(string stockid, string userid)
         {
             var allstockunitss = await _stockUnitRepo.GetAllAsync(s => s.Stock,s=>s.User);

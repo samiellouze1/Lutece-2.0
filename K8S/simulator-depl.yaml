@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: simulator-depl
+  name: stock-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: simulatorservice
+      app: stockservice
   template:
     metadata:
       labels:
-        app: simulatorservice
+        app: stockservice
     spec:
       containers:
-        - name: simulatorservice
-          image: samilxvi/simulatorservice:latest
+        - name: stockservice
+          image: samilxvi/stockservice:latest
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: simulator-clusterip-srv
+  name: stock-clusterip-srv
 spec:
   type: ClusterIP
   selector:
-    app: simulatorservice
+    app: stockservice
   ports:
-  - name: simulatorservice
+  - name: stockservice
     protocol: TCP
     port: 80
     targetPort: 80
