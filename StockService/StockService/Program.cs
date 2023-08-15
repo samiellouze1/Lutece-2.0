@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using StockService.Data;
 using StockService.Data.Extensions;
+using StockService.JobTriggerer;
 using StockService.Models;
 using StockService.Repo.IRepo;
 using StockService.Repo.Repo;
@@ -71,7 +72,6 @@ builder.Services.AddScoped<IStockRepo, StockRepo>();
 #endregion
 
 #region services
-
 builder.Services.AddScoped<ICreateOriginalOrderService, CreateOriginalOrderService>();
 #endregion
 
@@ -96,5 +96,7 @@ app.MapControllers();
 
 AppDbInitializer.SeedUsersAndRolesAsync(app).Wait();
 AppDbInitializer.Seed(app);
+HttpClient httpClient = new HttpClient();
+JobTriggerrer.TriggerJob(app.Configuration, httpClient).Wait();
 
 app.Run();

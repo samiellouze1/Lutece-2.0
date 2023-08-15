@@ -1,5 +1,7 @@
 ﻿using SimulatorService.Data.DTOs;
 using System.Data.SqlTypes;
+using System.Text;
+using System.Text.Json;
 
 namespace SimulatorService.SyncDataServices.Http
 {
@@ -13,46 +15,65 @@ namespace SimulatorService.SyncDataServices.Http
             _httpClient = httpClient;
             _configuration = configuration;
         }
-        public async Task<List<List<int>>> GetInformationFromStock()
-        {
 
-            var stockIds= new List<string>() {"1", "2", "3", "4" };
-            var userIds = new List<string>() { "1", "2", "3", "4" };
-            var usernames = new List<string>() { "user1@gdp.com", "user2@gdp.com", "user3@gdp.com", "user4@gdp.com" };
-            var passwords = new List<string>() { "User1123@", "User2123@", "User3123@","User4123@" };
-            var StockUserDictionnary = new List<List<int>>();
-            for (int i=0;i<4;i++)
+        public async Task<double> GetInformationFromStock(string stockId)
+        {
+            string endpointUrl = $"{_configuration["StockService"]}" + "Stock";
+            HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
+            if (response.IsSuccessStatusCode)
             {
-                StockUserDictionnary.Add(new List<int>());
-                string apiUrl = $"{_configuration["StockService"]}" + "StockUnit";
-                Console.WriteLine(apiUrl);
-                for (int j=0;j<4;j++)
-                {
-                    var stockId = stockIds[i];
-                    var userId = userIds[j];
-                    var endpointUrl = $"{_configuration["StockService"]}StockUnit/{stockId}/{userId}";
-                    HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        int content = await response.Content.ReadFromJsonAsync<int>();
-                        Console.WriteLine($"StockId: {stockId}");
-                        Console.WriteLine($"UserId: {userId}");
-                        Console.WriteLine($"StockUnitCount: {content}");
-                        Console.WriteLine("--------------------------");
-                        StockUserDictionnary[i].Add(content);
-                    }
-                    else
-                    {
-                        Console.WriteLine("API Call was not successfull, API call statuscode" + response.StatusCode);
-                    }
-                }
+                var stockreaddto = await response.Content.ReadFromJsonAsync<StockReadDTO>();
+                return stockreaddto.AveragePrice; 
             }
-            return StockUserDictionnary,
+            else
+            {
+                throw new HttpRequestException("Failed to retrieve stock information from the service.");
+            }
         }
 
-        public Task PostOriginalOrderToStock(OriginalOrderCreateDto originalOrder)
+        public async Task<int> GetInformationFromStockUnit(string stockId, string userId)
         {
-            throw new NotImplementedException();
+            string endpointUrl = $"{_configuration["StockService"]}" + "StockUnit/StockUser";
+            var stockuserdto = new StockUserDTO()
+            {
+                StockId = stockId,
+                UserId = userId
+            };
+            var content = new StringContent(
+                JsonSerializer.Serialize(stockuserdto),
+                Encoding.UTF8,
+                "application/json"
+                );
+            HttpResponseMessage response = await _httpClient.PostAsync(endpointUrl, content);
+            var extract = new int();
+            if (response.IsSuccessStatusCode)
+            {
+                extract = await response.Content.ReadFromJsonAsync<int>();
+            }
+            else
+            {
+                Console.WriteLine("API Call was not successfull, API call statuscode" + response.StatusCode);
+            }
+            return extract;
         }
+        public async Task PostOriginalOrderToStock(OriginalOrderCreateDto originalOrderCreateDto)
+        {
+            string endpointUrl = $"{_configuration["StockService"]}" + "OriginalOrder";
+            var content = new StringContent(
+                JsonSerializer.Serialize(originalOrderCreateDto),
+                Encoding.UTF8,
+                "application/json"
+                );
+            HttpResponseMessage response= await _httpClient.PostAsync(endpointUrl,content);
+            if (response.IsSuccessStatusCode) 
+            {
+                Console.WriteLine("posting original order Successfull");
+            }
+            else
+            {
+                Console.WriteLine("API call not successfull for posting original order");
+            }
+        }
+
     }
 }

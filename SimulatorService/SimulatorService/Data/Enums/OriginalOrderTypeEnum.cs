@@ -1,6 +1,6 @@
 ﻿namespace SimulatorService.Data.Enums
 {
-    public enum OrderTypeEnum
+    public enum OriginalOrderTypeEnum
     {
         Buy,
         Sell

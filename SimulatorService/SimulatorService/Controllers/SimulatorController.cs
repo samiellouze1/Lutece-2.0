@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Hangfire;
 using SimulatorService.SyncDataServices.Http;
+using SimulatorService.Randomizer;
 
 namespace SimulatorService.Controllers
 {
@@ -8,21 +9,19 @@ namespace SimulatorService.Controllers
     [ApiController]
     public class SimulatorController : Controller
     {
-        private readonly IBackgroundJobClient _jobClient;
         private readonly IRecurringJobManager _recurringJobManager;
-        private readonly IStockDataClient _stockDataClient;
-        public SimulatorController(IBackgroundJobClient jobClient, IRecurringJobManager recurringJobManager, IStockDataClient stockDataClient)
+        private readonly IRandomizer _randomizer;
+        public SimulatorController( IRecurringJobManager recurringJobManager, IRandomizer randomizer)
         {
-            _jobClient = jobClient;
             _recurringJobManager = recurringJobManager;
-            _stockDataClient = stockDataClient;
+            _randomizer = randomizer;
         }
         [HttpGet]
         [Route("Recurring")]
         public string RecurringJobs()
         {
-            _recurringJobManager.AddOrUpdate("recurrentjob",() => _stockDataClient.GetInformationFromStock(), Cron.Minutely);
-            return "Welcome user in Recurring Job Demo!";
+            _recurringJobManager.AddOrUpdate("recurrentjob",() => _randomizer.RandomizeOriginalOrderSell(), Cron.Minutely);
+            return "Randomized an original order";
         }
     }
 }

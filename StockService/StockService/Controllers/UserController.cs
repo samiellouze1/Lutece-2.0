@@ -26,15 +26,15 @@ namespace StockService.Controllers
             _signInManager = signInManager;
         }
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(string username, string password)
+        public async Task<IActionResult> Login(UserLoginDTO logindto)
         {
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByNameAsync(logindto.UserName);
             if (user != null)
             {
-                var passwordCheck = await _userManager.CheckPasswordAsync(user, password);
+                var passwordCheck = await _userManager.CheckPasswordAsync(user, logindto.Password);
                 if (passwordCheck)
                 {
-                    var result = await _signInManager.PasswordSignInAsync(user, password, false, false);
+                    var result = await _signInManager.PasswordSignInAsync(user, logindto.Password, false, false);
                     if (result.Succeeded)
                     {
                         return Ok("authenticated");
@@ -50,23 +50,23 @@ namespace StockService.Controllers
             return Ok("Signed Out");
         }
         [HttpPost("Register")]
-        public async Task<IActionResult> Register(string username, string password)
+        public async Task<IActionResult> Register(UserRegisterDTO registerdto)
         {
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByNameAsync(registerdto.UserName);
             if (user == null)
             {
                 var newUser = new User()
                 {
-                    UserName = username,
+                    UserName = registerdto.UserName,
                     UserType=UserTypeEnum.Real,
                     Balance = 0
                     //needs other details
                 };
-                var newUserResponse = await _userManager.CreateAsync(newUser, password);
+                var newUserResponse = await _userManager.CreateAsync(newUser, registerdto.Password);
                 if ( newUserResponse.Succeeded)
                 {
                     //await _userManager.AddToRoleAsync(newUser);
-                    var result = await _signInManager.PasswordSignInAsync(newUser, password, false, false);
+                    var result = await _signInManager.PasswordSignInAsync(newUser, registerdto.Password, false, false);
                     if (result.Succeeded)
                     {
                         return Ok("Registered and logged in");

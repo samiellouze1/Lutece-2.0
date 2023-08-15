@@ -1,5 +1,6 @@
 using Hangfire;
 using Hangfire.MemoryStorage;
+using SimulatorService.Randomizer;
 using SimulatorService.SyncDataServices.Http;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient<IStockDataClient, HttpStockDataClient>();
+builder.Services.AddScoped<IRandomizer,Randomizer>();
 
 
 var app = builder.Build();

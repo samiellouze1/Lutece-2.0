@@ -46,8 +46,7 @@ namespace StockService.Controllers
                 return NotFound();
             }
         }
-        //needs revision!!!
-        [HttpPost("CreateOriginalOrder"), Authorize]
+        [HttpPost]
         public async Task<ActionResult<OriginalOrderReadDTO>> CreateOriginalOrder(OriginalOrderCreateDTO ordercreatedto)
         {
             //for visualizing progress
