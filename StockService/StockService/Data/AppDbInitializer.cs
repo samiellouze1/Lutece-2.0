@@ -20,9 +20,9 @@ namespace StockService.Data
                     context.AddRange(new List<Stock>()
                     {
                         new Stock() {Id="1", Name="Apple",AveragePrice=200,Quantity=500},
-                        new Stock() {Id="2", Name="Tesla", AveragePrice=150, Quantity=1000},
-                        new Stock() {Id="3", Name="Meta", AveragePrice=120,Quantity=300},
-                        new Stock() {Id="4", Name="Twitter", AveragePrice=175, Quantity=200}
+                        new Stock() {Id="2", Name="Amazon", AveragePrice=150, Quantity=1000},
+                        new Stock() {Id="3", Name="Google", AveragePrice=120,Quantity=300},
+                        new Stock() {Id="4", Name="Microsoft", AveragePrice=175, Quantity=200}
                     });
                     context.SaveChanges();
                 }

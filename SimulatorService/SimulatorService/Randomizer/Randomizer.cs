@@ -20,6 +20,7 @@ namespace SimulatorService.Randomizer
             Random userrandom = new Random();
             var userId = userrandom.Next(1,5).ToString();
             #endregion
+            await _stockDataClient.Authenticating(userId);
             var stockunitcount = await _stockDataClient.GetInformationFromStockUnit(stockId, userId);
             #region randomizing stock price
             var probabilities = new List<List<double>>()
@@ -58,7 +59,6 @@ namespace SimulatorService.Randomizer
                 OriginalQuantity = originalquantity,
                 StockId = stockId
             };
-            await _stockDataClient.Authenticating(userId);
             await _stockDataClient.PostOriginalOrderToStock(originalOrderCreateDto);
             await _stockDataClient.LoggingOut();
         }
