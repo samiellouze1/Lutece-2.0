@@ -2,7 +2,7 @@
 
 namespace SimulatorService.SyncDataServices.Http
 {
-    public interface IStockDataClient
+    public interface IHttpStockDataClient
     {
         Task PostOriginalOrderToStock(OriginalOrderCreateDto originalOrderCreateDto);
         Task<int> GetInformationFromStockUnit(string userId, string stockId);

@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace SimulatorService.SyncDataServices.Http
 {
-    public class HttpStockDataClient : IStockDataClient
+    public class HttpStockDataClient : IHttpStockDataClient
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
@@ -18,7 +18,7 @@ namespace SimulatorService.SyncDataServices.Http
 
         public async Task<double> GetInformationFromStock(string stockId)
         {
-            string endpointUrl = $"{_configuration["StockService"]}" + "Stock";
+            string endpointUrl = $"{_configuration["StockService"]}Stock/{stockId}";
             HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
             if (response.IsSuccessStatusCode)
             {

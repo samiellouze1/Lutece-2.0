@@ -30,6 +30,7 @@ namespace StockService.Data
             builder.Entity<User>().Property(u=>u.Balance).HasPrecision(6, 2);
             builder.Entity<Order>().Property(o=>o.ExecutedPrice).HasPrecision(6, 2);
             builder.Entity<Stock>().Property(s=>s.AveragePrice).HasPrecision(6, 2);
+            builder.Entity<StockUnit>().Property(su=>su.PriceBought).HasPrecision(6, 2);
             #endregion
 
             base.OnModelCreating(builder);

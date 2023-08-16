@@ -18,7 +18,6 @@ namespace StockService.Controllers
         private readonly IOriginalOrderRepo _originalOrderRepo;
         private readonly IMapper _mapper;
         private readonly ICreateOriginalOrderService _createooService;
-
         public OriginalOrderController(IMapper mapper, IOriginalOrderRepo originalOrderRepo, UserManager<User> userManager, ICreateOriginalOrderService createooService)
         {
             _originalOrderRepo = originalOrderRepo;
@@ -71,7 +70,7 @@ namespace StockService.Controllers
                 }
                 else
                 {
-                    var sellingOriginalOrdersList = await _createooService.GetCorrespondantOrders(originalorderModel,OriginalOrderTypeEnum.Buy);
+                    var sellingOriginalOrdersList = await _createooService.GetCorrespondantOrders(originalorderModel);
                     var quantityneeded = originalorderModel.OriginalQuantity;
                     foreach (var originalorder in sellingOriginalOrdersList.Where(oo=>oo.User!=user))
                     {
@@ -84,7 +83,7 @@ namespace StockService.Controllers
                                 break;
                             }
                             await _createooService.ExecuteOrder(order, originalorderModel.Price);
-                            await _createooService.ChangeInformationOfAStockUnit(originalorder, user);
+                            await _createooService.ChangeInformationOfAStockUnitFromInMarkettoInStock(originalorder, user);
                             await _createooService.CreateExecutedOrder(originalorderModel);
                             quantityneeded -= 1;
                         }
@@ -114,7 +113,7 @@ namespace StockService.Controllers
                 }
                 else
                 {
-                    var correspondingoriginalorders = await _createooService.GetCorrespondantOrders(originalorderModel, OriginalOrderTypeEnum.Sell);
+                    var correspondingoriginalorders = await _createooService.GetCorrespondantOrders(originalorderModel);
                     var neededquantity = originalorderModel.OriginalQuantity;
                     foreach ( var originalorder in correspondingoriginalorders.Where(oo=>oo.User!=user).ToList())
                     {
@@ -141,14 +140,14 @@ namespace StockService.Controllers
                     for (int i = 0;i< originalorderModel.RemainingQuantity;i++)
                     {
 
-                        await _createooService.ChangeInformationOfAStockUnit(originalorderModel);
+                        await _createooService.ChangeInformationOfAStockUnitFromInStockToInMarket(originalorderModel);
                         await _createooService.CreateInMarketOrder(originalorderModel);
                     }
                 }
             }
+            await _createooService.UpdateStockAveragePrice(originalorderModel);
             var orignalorderreaddto = _mapper.Map<OriginalOrderReadDTO>(originalorderModel);
             return CreatedAtRoute(nameof(GetOriginalOrderById), new { id = orignalorderreaddto.Id }, orignalorderreaddto);
         }
-
     }
 }

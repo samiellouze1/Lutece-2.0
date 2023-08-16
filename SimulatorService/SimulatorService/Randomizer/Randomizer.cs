@@ -6,8 +6,8 @@ namespace SimulatorService.Randomizer
 {
     public class Randomizer : IRandomizer
     {
-        private readonly IStockDataClient _stockDataClient;
-        public Randomizer(IStockDataClient stockDataClient)
+        private readonly IHttpStockDataClient _stockDataClient;
+        public Randomizer(IHttpStockDataClient stockDataClient)
         {
             _stockDataClient = stockDataClient;
         }

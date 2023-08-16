@@ -10,11 +10,13 @@ namespace StockService.Services.Services
         private readonly IOrderRepo _orderRepo;
         private readonly IOriginalOrderRepo _originalOrderRepo;
         private readonly IStockUnitRepo _stockUnitRepo;
-        public CreateOriginalOrderService(IOrderRepo orderRepo, IOriginalOrderRepo originalOrderRepo, IStockUnitRepo stockUnitRepo)
+        private readonly IStockRepo _stockRepo;
+        public CreateOriginalOrderService(IOrderRepo orderRepo, IOriginalOrderRepo originalOrderRepo, IStockUnitRepo stockUnitRepo, IStockRepo stockRepo)
         {
             _orderRepo = orderRepo;
             _originalOrderRepo = originalOrderRepo;
             _stockUnitRepo = stockUnitRepo;
+            _stockRepo = stockRepo;
         }
         public async Task CreateInMarketOrder(OriginalOrder originalorderModel)
         {
@@ -30,15 +32,15 @@ namespace StockService.Services.Services
             originalorderModel.RemainingQuantity = quantityneeded;
             await _originalOrderRepo.SaveChangesAsync();
         }
-        public async Task<List<OriginalOrder>> GetCorrespondantOrders(OriginalOrder originalorderModel,OriginalOrderTypeEnum orderTypeEnum)
+        public async Task<List<OriginalOrder>> GetCorrespondantOrders(OriginalOrder originalorderModel)
         {
             var OriginalOrders = await _originalOrderRepo.GetAllAsync(oo => oo.Stock.StockUnits, oo => oo.Orders, oo => oo.User.StockUnits);
             var sellingOriginalOrdersList = OriginalOrders.
-                                                            Where(oo => oo.OriginalOrderType != orderTypeEnum).
+                                                            Where(oo => oo.OriginalOrderType != originalorderModel.OriginalOrderType).
                                                             Where(oo => oo.StockId == originalorderModel.StockId).
                                                             Where(oo => oo.OriginalOrderStatus == OriginalOrderStatusEnum.Active).
                                                             ToList();
-            if (orderTypeEnum == OriginalOrderTypeEnum.Buy) 
+            if (originalorderModel.OriginalOrderType == OriginalOrderTypeEnum.Buy) 
             { 
                 sellingOriginalOrdersList=sellingOriginalOrdersList.
                     Where(oo=>oo.Price<originalorderModel.Price).
@@ -73,7 +75,7 @@ namespace StockService.Services.Services
             };
             await _orderRepo.AddAsync(newOrderExecuted);
         }
-        public async Task ChangeInformationOfAStockUnit(OriginalOrder originalorder, User thebuyer)
+        public async Task ChangeInformationOfAStockUnitFromInMarkettoInStock(OriginalOrder originalorder, User thebuyer)
         {
             var theseller = originalorder.User;
             var stockunits = theseller.StockUnits.Where(su => su.Stock == originalorder.Stock).ToList();
@@ -92,9 +94,10 @@ namespace StockService.Services.Services
             var stockunit = stockunits[0];
             stockunit.User = thebuyer;
             stockunit.DateBought = DateTime.Now;
+            stockunit.PriceBought = originalorder.Price;
             await _stockUnitRepo.SaveChangesAsync();
         }
-        public async Task ChangeInformationOfAStockUnit(OriginalOrder originalorder)
+        public async Task ChangeInformationOfAStockUnitFromInStockToInMarket(OriginalOrder originalorder)
         {
             var theowner = originalorder.User;
             var stockunits = theowner.StockUnits.Where(su => su.Stock == originalorder.Stock).ToList();
@@ -117,6 +120,12 @@ namespace StockService.Services.Services
                 Where(su=>su.StockUnitStatus==StockUnitStatusEnum.InStock).
                 ToList();
             return stockunitlist;
+        }
+        public async Task UpdateStockAveragePrice(OriginalOrder originalorderModel)
+        {
+            var thestock = await _stockRepo.GetByIdAsync(originalorderModel.Stock.Id, s => s.StockUnits);
+            thestock.AveragePrice = Queryable.Average(thestock.StockUnits.Select(su=>su.PriceBought).AsQueryable());
+            await _stockRepo.SaveChangesAsync();
         }
     }
 }

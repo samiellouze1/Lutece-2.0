@@ -19,7 +19,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHttpClient<IStockDataClient, HttpStockDataClient>();
+builder.Services.AddHttpClient<IHttpStockDataClient, HttpStockDataClient>();
 builder.Services.AddScoped<IRandomizer,Randomizer>();
 
 
