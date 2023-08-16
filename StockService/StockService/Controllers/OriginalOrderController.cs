@@ -145,7 +145,7 @@ namespace StockService.Controllers
                     }
                 }
             }
-            await _createooService.UpdateStockAveragePrice(originalorderModel);
+            await _createooService.UpdateStockAveragePrice(ordercreatedto.StockId);
             var orignalorderreaddto = _mapper.Map<OriginalOrderReadDTO>(originalorderModel);
             return CreatedAtRoute(nameof(GetOriginalOrderById), new { id = orignalorderreaddto.Id }, orignalorderreaddto);
         }

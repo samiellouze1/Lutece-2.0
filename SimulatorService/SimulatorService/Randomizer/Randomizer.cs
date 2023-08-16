@@ -16,9 +16,9 @@ namespace SimulatorService.Randomizer
             var ordertype = OriginalOrderTypeEnum.Sell;
             #region randomizing stock and user
             Random stockrandom = new Random();
-            var stockId = stockrandom.Next(0, 4).ToString();
+            var stockId = stockrandom.Next(1, 5).ToString();
             Random userrandom = new Random();
-            var userId = userrandom.Next(0, 4).ToString();
+            var userId = userrandom.Next(1,5).ToString();
             #endregion
             var stockunitcount = await _stockDataClient.GetInformationFromStockUnit(stockId, userId);
             #region randomizing stock price
@@ -58,7 +58,9 @@ namespace SimulatorService.Randomizer
                 OriginalQuantity = originalquantity,
                 StockId = stockId
             };
+            await _stockDataClient.Authenticating(userId);
             await _stockDataClient.PostOriginalOrderToStock(originalOrderCreateDto);
+            await _stockDataClient.LoggingOut();
         }
     }
 }

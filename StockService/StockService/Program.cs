@@ -98,6 +98,13 @@ app.MapControllers();
 AppDbInitializer.SeedUsersAndRolesAsync(app).Wait();
 AppDbInitializer.Seed(app);
 HttpClient httpClient = new HttpClient();
-try { JobTriggerrer.TriggerJob(app.Configuration, httpClient).Wait(); }catch(Exception ex) { Console.WriteLine(ex); }
+try 
+{
+    JobTriggerrer.TriggerJob(app.Configuration, httpClient).Wait(); 
+}
+catch(Exception ex) 
+{ 
+    Console.WriteLine(ex);
+}
 
 app.Run();

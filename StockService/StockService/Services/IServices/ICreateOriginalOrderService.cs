@@ -15,6 +15,6 @@ namespace StockService.Services.IServices
         public Task ChangeInformationOfAStockUnitFromInStockToInMarket(OriginalOrder originalorder);
         public Task ChangeInformationOfAStockUnitFromInMarkettoInStock(OriginalOrder originalorder, User user);
         public Task ChangeInformationOfAStockUnitFromUsertoUser(OriginalOrder originalorder, User thebuyer);
-        public Task UpdateStockAveragePrice(OriginalOrder originalorderModel);
+        public Task UpdateStockAveragePrice(string stockId);
     }
 }

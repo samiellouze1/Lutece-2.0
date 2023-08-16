@@ -175,7 +175,7 @@ namespace StockService.Data
             {
                 orders.Add(new Order() { OrderStatus = OrderStatusEnum.Active });
             }
-            var result = context.Add(new OriginalOrder()
+            context.Add(new OriginalOrder()
             {
                 Stock = stock,
                 Price = price,

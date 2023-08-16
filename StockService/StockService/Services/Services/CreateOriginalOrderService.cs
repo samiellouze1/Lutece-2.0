@@ -121,9 +121,9 @@ namespace StockService.Services.Services
                 ToList();
             return stockunitlist;
         }
-        public async Task UpdateStockAveragePrice(OriginalOrder originalorderModel)
+        public async Task UpdateStockAveragePrice(string stockId)
         {
-            var thestock = await _stockRepo.GetByIdAsync(originalorderModel.Stock.Id, s => s.StockUnits);
+            var thestock = await _stockRepo.GetByIdAsync(stockId, s => s.StockUnits);
             thestock.AveragePrice = Queryable.Average(thestock.StockUnits.Select(su=>su.PriceBought).AsQueryable());
             await _stockRepo.SaveChangesAsync();
         }
