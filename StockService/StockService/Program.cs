@@ -10,6 +10,7 @@ using StockService.Repo.IRepo;
 using StockService.Repo.Repo;
 using StockService.Services.IServices;
 using StockService.Services.Services;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -97,6 +98,6 @@ app.MapControllers();
 AppDbInitializer.SeedUsersAndRolesAsync(app).Wait();
 AppDbInitializer.Seed(app);
 HttpClient httpClient = new HttpClient();
-JobTriggerrer.TriggerJob(app.Configuration, httpClient).Wait();
+try { JobTriggerrer.TriggerJob(app.Configuration, httpClient).Wait(); }catch(Exception ex) { Console.WriteLine(ex); }
 
 app.Run();

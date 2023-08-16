@@ -40,22 +40,22 @@ namespace StockService.Data
                 var user4 = context.Users.Find("4");
                 if (!context.StockUnits.Any())
                 {
-                    StockUnitCreation(user1, stock4, 50, context);
-                    StockUnitCreation(user1, stock3, 50, context);
-                    StockUnitCreation(user1, stock2, 10, context);
-                    StockUnitCreation(user1, stock1, 100, context);
-                    StockUnitCreation(user2, stock4, 50, context);
-                    StockUnitCreation(user2, stock3, 50, context);
-                    StockUnitCreation(user2, stock2, 70, context);
-                    StockUnitCreation(user2, stock1, 120, context);
-                    StockUnitCreation(user3, stock4, 50, context);
-                    StockUnitCreation(user3, stock3, 100, context);
-                    StockUnitCreation(user3, stock2, 120, context);
-                    StockUnitCreation(user3, stock1, 130, context);
-                    StockUnitCreation(user4, stock4, 50, context);
-                    StockUnitCreation(user4, stock3, 100, context);
-                    StockUnitCreation(user4, stock2, 800, context);
-                    StockUnitCreation(user4, stock1, 50, context);
+                    StockUnitCreation(user1, stock4, 50,175, context);
+                    StockUnitCreation(user1, stock3, 50,120, context);
+                    StockUnitCreation(user1, stock2, 10,150, context);
+                    StockUnitCreation(user1, stock1, 100,200, context);
+                    StockUnitCreation(user2, stock4, 50,175, context);
+                    StockUnitCreation(user2, stock3, 50,120, context);
+                    StockUnitCreation(user2, stock2, 70,150, context);
+                    StockUnitCreation(user2, stock1, 120,200, context);
+                    StockUnitCreation(user3, stock4, 50,175, context);
+                    StockUnitCreation(user3, stock3, 100,120, context);
+                    StockUnitCreation(user3, stock2, 120,150, context);
+                    StockUnitCreation(user3, stock1, 130,200, context);
+                    StockUnitCreation(user4, stock4, 50,175, context);
+                    StockUnitCreation(user4, stock3, 100,120, context);
+                    StockUnitCreation(user4, stock2, 800,150, context);
+                    StockUnitCreation(user4, stock1, 50,200, context);
                 }
                 #endregion
 
@@ -142,16 +142,25 @@ namespace StockService.Data
                 #endregion
             }
         }
-        private static void StockUnitCreation(User user, Stock stock, int quantity, AppDbContext context)
+        private static void StockUnitCreation(User user, Stock stock, int quantity,double price, AppDbContext context)
         {
+            var stockunits = new List<StockUnit>();
             for (int i = 0; i < quantity; i++)
             {
-                context.Add
+                stockunits.Add
                 (
-                        new StockUnit() { User = user, Stock = stock, StockUnitStatus = StockUnitStatusEnum.InStock, DateBought = DateTime.Now }
+                        new StockUnit() 
+                        {
+                            User = user,
+                            Stock = stock,
+                            StockUnitStatus = StockUnitStatusEnum.InStock,
+                            DateBought = DateTime.Now,
+                            PriceBought = price
+                        }
                     );
-                context.SaveChanges();
             }
+            context.StockUnits.AddRange(stockunits);
+            context.SaveChanges();
         }
         private static void SellingOriginalOrderCreation(User user, Stock stock, int quantity, double price, AppDbContext context)
         {
