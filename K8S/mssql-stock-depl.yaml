@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mssql-stock-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mssql-stock
+  template:
+    metadata:
+      labels:
+        app: mssql-stock
+    spec:
+      containers:
+        - name: mssql-stock
+          image: mcr.microsoft.com/mssql/server:2017-latest
+          ports:
+            - containerPort: 1433
+          env:
+          - name: MSSQL_PID
+            value: "Express"
+          - name: ACCEPT_EULA
+            value: "Y"
+          - name: SA_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mssql-stock 
+                #pas55w0rd!
+                key: SA_PASSWORD
+          volumeMounts:
+          - mountPath: /var/opt/mssql/data
+            name: mssql-stock-db
+      volumes:
+      - name: mssql-stock-db
+        persistentVolumeClaim:
+          claimName: mssql-stock-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mssql-stock-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: mssql-stock
+  ports:
+  - name: mssql-stock
+    protocol: TCP
+    port: 1433
+    targetPort: 1433
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mssql-stock-loadbalancer
+spec:
+  type: LoadBalancer
+  selector:
+    app: mssql-stock
+  ports:
+  - protocol: TCP
+    port: 1433
+    targetPort: 1433
