@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockService.Data.DTOs;
 using StockService.Models;
@@ -8,6 +9,7 @@ namespace StockService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StockController : ControllerBase
     {
         private readonly IStockRepo _stockRepo;

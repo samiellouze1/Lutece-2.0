@@ -20,7 +20,7 @@ namespace SimulatorService.Controllers
         [Route("Recurring")]
         public string RecurringJobs()
         {
-            Console.WriteLine("recurring job awakened");
+            Console.WriteLine("-------------------record awakened-----------------");
             _recurringJobManager.AddOrUpdate("recurrentjob",() => _randomizer.RandomizeOriginalOrderSell(), Cron.Minutely);
             return "Randomized an original order";
         }

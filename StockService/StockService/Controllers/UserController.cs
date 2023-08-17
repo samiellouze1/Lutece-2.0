@@ -43,7 +43,7 @@ namespace StockService.Controllers
             }
             return BadRequest("Invalid Credentials");
         }
-        [HttpPost("Logout")]
+        [HttpGet("Logout")]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();

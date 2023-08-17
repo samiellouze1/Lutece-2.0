@@ -12,10 +12,12 @@ namespace StockService.Models
 
         public string Id{ get; set; }
         public virtual User User { get; set; }
-        public virtual Stock Stock { get;set; }
         [Required]
-        public StockUnitStatusEnum StockUnitStatus { get; set; } = StockUnitStatusEnum.InStock;
+        public double PriceBought { get; set; }
         [Required]
         public DateTime DateBought { get; set; }
+        [Required]
+        public StockUnitStatusEnum StockUnitStatus { get; set; } = StockUnitStatusEnum.InStock;
+        public virtual Stock Stock { get; set; }
     }
 }

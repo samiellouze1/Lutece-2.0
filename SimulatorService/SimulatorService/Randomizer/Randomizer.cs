@@ -6,8 +6,8 @@ namespace SimulatorService.Randomizer
 {
     public class Randomizer : IRandomizer
     {
-        private readonly IStockDataClient _stockDataClient;
-        public Randomizer(IStockDataClient stockDataClient)
+        private readonly IHttpStockDataClient _stockDataClient;
+        public Randomizer(IHttpStockDataClient stockDataClient)
         {
             _stockDataClient = stockDataClient;
         }
@@ -16,10 +16,11 @@ namespace SimulatorService.Randomizer
             var ordertype = OriginalOrderTypeEnum.Sell;
             #region randomizing stock and user
             Random stockrandom = new Random();
-            var stockId = stockrandom.Next(0, 4).ToString();
+            var stockId = stockrandom.Next(1, 5).ToString();
             Random userrandom = new Random();
-            var userId = userrandom.Next(0, 4).ToString();
+            var userId = userrandom.Next(1,5).ToString();
             #endregion
+            await _stockDataClient.Authenticating(userId);
             var stockunitcount = await _stockDataClient.GetInformationFromStockUnit(stockId, userId);
             #region randomizing stock price
             var probabilities = new List<List<double>>()
@@ -59,6 +60,7 @@ namespace SimulatorService.Randomizer
                 StockId = stockId
             };
             await _stockDataClient.PostOriginalOrderToStock(originalOrderCreateDto);
+            await _stockDataClient.LoggingOut();
         }
     }
 }
