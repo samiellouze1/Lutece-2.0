@@ -23,18 +23,18 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-if (builder.Environment.IsDevelopment())
-{
-    Console.WriteLine("Development");
-    builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("InMem"));
-    Console.WriteLine("Using In Memory Database");
-}
-else
-{
-    Console.WriteLine("Production");
-    builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DBConnectionString")));
-    Console.WriteLine("using sql server database");
-}
+//if (builder.Environment.IsDevelopment())
+//{
+Console.WriteLine("Development");
+builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("InMem"));
+Console.WriteLine("Using In Memory Database");
+//}
+//else
+//{
+//Console.WriteLine("Production");
+//builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("StockDB")));
+//Console.WriteLine("using sql server database");
+//}
 
 #region addidentity
 // Add Identity services

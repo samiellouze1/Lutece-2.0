@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: probabilitysub-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: probabilitysubservice
+  template:
+    metadata:
+      labels:
+        app: probabilitysubservice
+    spec:
+      containers:
+        - name: probabilitysubservice
+          image: samilxvi/probabilitysubservice:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: probabilitysub-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: probabilitysubservice
+  ports:
+  - name: probabilitysubservice
+    protocol: TCP
+    port: 80
+    targetPort: 80
