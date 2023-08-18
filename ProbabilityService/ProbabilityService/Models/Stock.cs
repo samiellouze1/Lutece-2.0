@@ -2,7 +2,7 @@
 
 namespace ProbabilityService.Models
 {
-    public class Stock
+    public class Stock:IEntityBase
     {
         [Required]
         public string Id { get; set; }

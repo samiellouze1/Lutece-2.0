@@ -2,7 +2,7 @@
 
 namespace ProbabilityService.Models
 {
-    public class ProbabilityDistributionUnit
+    public class ProbabilityDistributionUnit:IEntityBase
     {
         public string Id { get; set; }
         public double Price { get; set; }
