@@ -117,7 +117,7 @@ namespace SimulatorService.SyncDataServices.Http
             }
             else
             {
-                Console.WriteLine("API call not successfull for posting original order");
+                Console.WriteLine("API call not successfull for posting original order"+response.StatusCode);
             }
         }
     }

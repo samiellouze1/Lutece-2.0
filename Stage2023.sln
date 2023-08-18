@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimulatorService", "Simulat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProbabilityService", "ProbabilityService\ProbabilityService\ProbabilityService.csproj", "{45FD9772-50EF-438D-BD8A-B585AFBB4A69}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_Stock", "Test_Stock\Test_Stock.csproj", "{589E01F6-A43A-4570-8CA6-1A9DA3D7462F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecommandationService", "RecommandationService\RecommandationService\RecommandationService.csproj", "{A75F12A6-6710-41DF-B12E-A68C6C50859F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{45FD9772-50EF-438D-BD8A-B585AFBB4A69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45FD9772-50EF-438D-BD8A-B585AFBB4A69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45FD9772-50EF-438D-BD8A-B585AFBB4A69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{589E01F6-A43A-4570-8CA6-1A9DA3D7462F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{589E01F6-A43A-4570-8CA6-1A9DA3D7462F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{589E01F6-A43A-4570-8CA6-1A9DA3D7462F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{589E01F6-A43A-4570-8CA6-1A9DA3D7462F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A75F12A6-6710-41DF-B12E-A68C6C50859F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A75F12A6-6710-41DF-B12E-A68C6C50859F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A75F12A6-6710-41DF-B12E-A68C6C50859F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A75F12A6-6710-41DF-B12E-A68C6C50859F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

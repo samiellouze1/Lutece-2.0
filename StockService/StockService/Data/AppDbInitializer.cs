@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StockService.Data.Enums;
 using StockService.Models;
+using System.Diagnostics.Metrics;
 using System.Runtime.Intrinsics.X86;
 
 namespace StockService.Data
@@ -70,10 +71,28 @@ namespace StockService.Data
                 #endregion
             }
         }
-        public static async Task SeedUsersAndRolesAsync(IApplicationBuilder applicationBuilder)
+        public static async Task SeedUsersAndRolesAsync(IApplicationBuilder applicationBuilder,bool isProduction)
         {
+
             using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
             {
+                var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
+                //apply migration
+                if (isProduction)
+                {
+                    Console.WriteLine("------------Attempting to apply migrations----");
+                    try
+                    {
+                        context.Database.Migrate();
+                        Console.WriteLine("---------applied migrations---------------");
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine("--------couldnt apply migrations----");
+                        Console.WriteLine(ex);
+                        Console.WriteLine("---------------------");
+                    }
+                }
                 //roles insertion
 
                 #region user
