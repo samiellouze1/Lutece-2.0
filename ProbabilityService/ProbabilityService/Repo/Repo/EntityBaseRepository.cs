@@ -1,4 +1,11 @@
-﻿namespace ProbabilityService.Repo.Repo
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using ProbabilityService.Repo.IRepo;
+using ProbabilityService.Models;
+using ProbabilityService.Data;
+
+namespace ProbabilityService.Repo.Repo
 {
     public class EntityBaseRepository<T> : IEntityBaseRepository<T> where T : class, IEntityBase, new()
     {
