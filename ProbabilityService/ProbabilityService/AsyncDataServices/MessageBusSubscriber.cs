@@ -60,7 +60,7 @@ namespace ProbabilityService.AsyncDataServices
 
         private void RabbitMQ_ConnectionShutdown(object sender, ShutdownEventArgs e)
         {
-            Console.WriteLine("--> Connection Shutdown");
+            Console.WriteLine("--> Connection Shutdown"); 
         }
 
         public override void Dispose()
