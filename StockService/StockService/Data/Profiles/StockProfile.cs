@@ -11,6 +11,7 @@ namespace StockService.Data.Profiles
             //Source >> target
             CreateMap<Stock, StockReadDTO>();
             CreateMap<StockCreateDTO, Stock>();
+            CreateMap<Stock, StockPublishDTO>();
         }
     }
 }

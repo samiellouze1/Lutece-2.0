@@ -70,7 +70,7 @@ namespace StockService.Controllers
                 }
                 else
                 {
-                    var sellingOriginalOrdersList = await _createooService.GetCorrespondantOrders(originalorderModel);
+                    var sellingOriginalOrdersList = await _createooService.GetCorrespondantOriginalOrders(originalorderModel);
                     var quantityneeded = originalorderModel.OriginalQuantity;
                     foreach (var originalorder in sellingOriginalOrdersList.Where(oo=>oo.User!=user))
                     {
@@ -113,7 +113,7 @@ namespace StockService.Controllers
                 }
                 else
                 {
-                    var correspondingoriginalorders = await _createooService.GetCorrespondantOrders(originalorderModel);
+                    var correspondingoriginalorders = await _createooService.GetCorrespondantOriginalOrders(originalorderModel);
                     var neededquantity = originalorderModel.OriginalQuantity;
                     foreach ( var originalorder in correspondingoriginalorders.Where(oo=>oo.User!=user).ToList())
                     {

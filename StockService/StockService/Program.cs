@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using StockService.AsyncDataServices;
 using StockService.Data;
 using StockService.Data.Extensions;
 using StockService.JobTriggerer;
@@ -24,6 +25,12 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+#region 
+builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
+#endregion
+
+#region environment
 if (builder.Environment.IsDevelopment())
 {
     Console.WriteLine("Development");
@@ -36,6 +43,7 @@ else
     builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("StockDB")));
     Console.WriteLine("using sql server database");
 }
+#endregion
 
 #region addidentity
 // Add Identity services

@@ -27,9 +27,9 @@ namespace StockService.AsyncDataServices
                 Console.WriteLine($" ! ! ! Could not connect to message bus {ex.Message}");
             }
         }
-        public void PublishNewStockPrice(StockPriceDTO stockprice)
+        public void PublishNewStock(StockPublishDTO stockPublishDTO)
         {
-            var message = JsonSerializer.Serialize(stockprice);
+            var message = JsonSerializer.Serialize(stockPublishDTO);
             if (_connection.IsOpen)
             {
                 Console.WriteLine("RabbitMQ connection open; sending message ......");
@@ -48,11 +48,11 @@ namespace StockService.AsyncDataServices
         }
         public void Dispose()
         {
-            Console.WriteLine("MessageBus Disposed");
             if (_channel.IsOpen)
             {
                 _channel.Close();
             }
+            Console.WriteLine("MessageBus Disposed");
         }
         private void RabbitMQ_ConnectiononShutDown(object sender, ShutdownEventArgs e)
         {

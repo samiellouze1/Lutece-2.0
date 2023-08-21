@@ -1,4 +1,7 @@
-﻿using StockService.Data.Enums;
+﻿using AutoMapper;
+using StockService.AsyncDataServices;
+using StockService.Data.DTOs;
+using StockService.Data.Enums;
 using StockService.Models;
 using StockService.Repo.IRepo;
 using StockService.Services.IServices;
@@ -11,12 +14,17 @@ namespace StockService.Services.Services
         private readonly IOriginalOrderRepo _originalOrderRepo;
         private readonly IStockUnitRepo _stockUnitRepo;
         private readonly IStockRepo _stockRepo;
-        public CreateOriginalOrderService(IOrderRepo orderRepo, IOriginalOrderRepo originalOrderRepo, IStockUnitRepo stockUnitRepo, IStockRepo stockRepo)
+        private readonly IMessageBusClient _messageBus;
+        private readonly Mapper _mapper;
+
+        public CreateOriginalOrderService(IOrderRepo orderRepo, IOriginalOrderRepo originalOrderRepo, IStockUnitRepo stockUnitRepo, IStockRepo stockRepo, IMessageBusClient messageBus, Mapper mapper)
         {
             _orderRepo = orderRepo;
             _originalOrderRepo = originalOrderRepo;
             _stockUnitRepo = stockUnitRepo;
             _stockRepo = stockRepo;
+            _messageBus = messageBus;
+            _mapper = mapper;
         }
         public async Task CreateInMarketOrder(OriginalOrder originalorderModel)
         {
@@ -32,7 +40,7 @@ namespace StockService.Services.Services
             originalorderModel.RemainingQuantity = quantityneeded;
             await _originalOrderRepo.SaveChangesAsync();
         }
-        public async Task<List<OriginalOrder>> GetCorrespondantOrders(OriginalOrder originalorderModel)
+        public async Task<List<OriginalOrder>> GetCorrespondantOriginalOrders(OriginalOrder originalorderModel)
         {
             var OriginalOrders = await _originalOrderRepo.GetAllAsync(oo => oo.Stock.StockUnits, oo => oo.Orders, oo => oo.User.StockUnits);
             var sellingOriginalOrdersList = OriginalOrders.
@@ -126,6 +134,20 @@ namespace StockService.Services.Services
             var thestock = await _stockRepo.GetByIdAsync(stockId, s => s.StockUnits);
             thestock.AveragePrice = Queryable.Average(thestock.StockUnits.Select(su=>su.PriceBought).AsQueryable());
             await _stockRepo.SaveChangesAsync();
+            Console.WriteLine("-----------------------");
+            try
+            {
+                var thestockpublishdto = _mapper.Map<StockPublishDTO>(thestock);
+                thestockpublishdto.Event = "Stock_Published";
+                _messageBus.PublishNewStock(thestockpublishdto);
+                Console.WriteLine("Published new stock to rabbitmq");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Couldn't send data to probability service using Rabbit MQ");
+                Console.WriteLine(ex.Message);
+            }
+            Console.WriteLine("-----------------------");
         }
     }
 }

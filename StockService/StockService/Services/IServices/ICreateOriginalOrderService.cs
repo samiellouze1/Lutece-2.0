@@ -5,7 +5,7 @@ namespace StockService.Services.IServices
 {
     public interface ICreateOriginalOrderService
     {
-        public Task<List<OriginalOrder>> GetCorrespondantOrders(OriginalOrder originalorderModel);
+        public Task<List<OriginalOrder>> GetCorrespondantOriginalOrders(OriginalOrder originalorderModel);
         public Task ExecuteOriginalOrder(OriginalOrder originalorder); 
         public Task ExecuteOrder(Order order, double Price);
         public Task CreateExecutedOrder(OriginalOrder originalorderModel);

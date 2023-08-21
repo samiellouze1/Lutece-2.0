@@ -4,6 +4,6 @@ namespace StockService.AsyncDataServices
 {
     public interface IMessageBusClient
     {
-        public void PublishNewStockPrice(StockPriceDTO stockprice);
+        public void PublishNewStock(StockPublishDTO stockPublishDTO);
     }
 }
