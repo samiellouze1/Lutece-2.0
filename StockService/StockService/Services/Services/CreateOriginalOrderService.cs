@@ -15,7 +15,7 @@ namespace StockService.Services.Services
         private readonly IStockUnitRepo _stockUnitRepo;
         private readonly IStockRepo _stockRepo;
         private readonly IMessageBusClient _messageBus;
-        private readonly Mapper _mapper;
+        private readonly IMapper _mapper;
 
         public CreateOriginalOrderService(IOrderRepo orderRepo, IOriginalOrderRepo originalOrderRepo, IStockUnitRepo stockUnitRepo, IStockRepo stockRepo, IMessageBusClient messageBus, Mapper mapper)
         {

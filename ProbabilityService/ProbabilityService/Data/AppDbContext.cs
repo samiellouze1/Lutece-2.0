@@ -20,9 +20,10 @@ namespace ProbabilityService.Data
             #endregion
 
             #region doubles
-            builder.Entity<StockTrace>().Property(st => st.Price).HasPrecision(6, 2);
+            builder.Entity<StockTrace>().Property(st => st.AveragePrice).HasPrecision(6, 2);
             builder.Entity<ProbabilityDistributionUnit>().Property(st => st.Price).HasPrecision(6, 2);
             builder.Entity<ProbabilityDistributionUnit>().Property(st => st.Probability).HasPrecision(6, 2);
+            builder.Entity<Stock>().Property(s=>s.AveragePrice).HasPrecision(6, 2);
             #endregion
             base.OnModelCreating(builder);
         }

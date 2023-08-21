@@ -1,5 +1,7 @@
 ﻿using ProbabilityService.EventProcessing;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using System.Text;
 
 namespace ProbabilityService.AsyncDataServices
 {
@@ -20,22 +22,55 @@ namespace ProbabilityService.AsyncDataServices
 
         private void InitializeRabbitMQ()
         {
-            throw new NotImplementedException();
+            var factory = new ConnectionFactory() { HostName = _configuration["RabbitMQHost"], Port = int.Parse(_configuration["RabbitMQPort"]) };
+
+            _connection = factory.CreateConnection();
+            _channel = _connection.CreateModel();
+            _channel.ExchangeDeclare(exchange: "trigger", type: ExchangeType.Fanout);
+            _queueName = _channel.QueueDeclare().QueueName;
+            _channel.QueueBind(queue: _queueName,
+                exchange: "trigger",
+                routingKey: "");
+
+            Console.WriteLine("--> Listenting on the Message Bus...");
+
+            _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            throw new NotImplementedException();
+            stoppingToken.ThrowIfCancellationRequested();
+
+            var consumer = new EventingBasicConsumer(_channel);
+
+            consumer.Received += (ModuleHandle, ea) =>
+            {
+                Console.WriteLine("--> Event Received!");
+
+                var body = ea.Body;
+                var notificationMessage = Encoding.UTF8.GetString(body.ToArray());
+
+                _eventProcessor.ProcessEvent(notificationMessage);
+            };
+
+            _channel.BasicConsume(queue: _queueName, autoAck: true, consumer: consumer);
+
+            return Task.CompletedTask;
         }
 
-        private void RabbitMQ_ConnectionShitdown(object sender, ShutdownEventArgs e)
+        private void RabbitMQ_ConnectionShutdown(object sender, ShutdownEventArgs e)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("--> Connection Shutdown");
         }
 
         public override void Dispose()
         {
-            throw new NotImplementedException();
+            if (_channel.IsOpen)
+            {
+                _channel.Close();
+                _connection.Close();
+            }
+            base.Dispose();
         }
     }
 }

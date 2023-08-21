@@ -1,34 +1,73 @@
-﻿using AutoMapper;
+﻿
+using ProbabilityService.Data.DTO;
+using ProbabilityService.Repo.IRepo;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text.Json;
 
 namespace ProbabilityService.EventProcessing
 {
     public class EventProcessor : IEventProcessor
     {
         private readonly IServiceScopeFactory _scopefactory;
-        private readonly IMapper _mapper;
 
-        public EventProcessor(IServiceScopeFactory scopeFactory, IMapper mapper)
+        public EventProcessor(IServiceScopeFactory scopeFactory)
         {
             _scopefactory = scopeFactory;
-            _mapper = mapper;
         }
         public void ProcessEvent(string message)
         {
-            throw new NotImplementedException();
+            var eventtype = DetermineEvent(message);
+            switch(eventtype)
+            {
+                case EventType.Stock_Published:
+                    modifystockinfo(message); 
+                    break;
+                    ;
+                default:
+                    break;
+            }
         }
         private EventType DetermineEvent ( string notificationMessage)
         {
-            throw new NotImplementedException ();
+            Console.WriteLine("----------------Determining event-----");
+            var eventType = JsonSerializer.Deserialize<GenericEventDTO>(notificationMessage);
+
+            switch (eventType.Event)
+            {
+                case "Stock_Published":
+                    Console.WriteLine("-----Stock_Published Event detected");
+                    return EventType.Stock_Published;
+                default:
+                    Console.WriteLine("----- event does not concern us");
+                    return EventType.Undetermined;
+            }
         }
-        private void addStockPrice(string stockpricePublishedMessage)
+        private async void modifystockinfo(string stockPublishedMessage)
         {
-            throw new NotImplementedException () ;
+            using (var scope = _scopefactory.CreateScope()) 
+            {
+                var stockRepo = scope.ServiceProvider.GetRequiredService<IStockRepo>();
+                var stockpublishdto = JsonSerializer.Deserialize<StockPublishDTO>(stockPublishedMessage);
+                try
+                {
+                    var stocks = await stockRepo.GetAllAsync();
+                    var thestock = stocks.Where(s => s.StockId == stockpublishdto.Id).ToList()[0];
+                    thestock.AveragePrice = stockpublishdto.AveragePrice;
+                    await stockRepo.SaveChangesAsync();
+                    Console.WriteLine("done the modifying");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("couldnt do the modifying exception : "+ex.Message);
+                    Console.WriteLine(ex.Message);
+                }
+            }
         }
     }
     enum EventType
     {
-        PlatformPublished,
+        Stock_Published,
         Undetermined
     }
 }
