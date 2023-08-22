@@ -13,7 +13,7 @@ namespace RecommandationService.Models
         public double Price { get; set; }
         [Required]
         public string StockId { get; set; }
-        public virtual BuyingOriginalOrderStock BuyingOriginalOrderStock { get; set; }
+        public virtual List<BuyingOriginalOrderStock> BuyingOriginalOrdersStock { get; set; }
         public virtual List<ProbabilityDistributionUnit> ProbabilityDistributionUnits { get; set;}
     }
 }
