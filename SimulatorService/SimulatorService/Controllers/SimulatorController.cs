@@ -21,7 +21,7 @@ namespace SimulatorService.Controllers
         public string RecurringJobs()
         {
             Console.WriteLine("-------------------record awakened-----------------");
-            _recurringJobManager.AddOrUpdate("recurrentjob",() => _randomizer.RandomizeOriginalOrderSell(), Cron.Minutely);
+            _recurringJobManager.AddOrUpdate("recurrentjob",() => _randomizer.RandomizeOriginalOrderSell(), Cron.MinuteInterval(2));
             return "Randomized an original order";
         }
     }

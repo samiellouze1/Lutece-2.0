@@ -12,6 +12,7 @@ namespace StockService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class OriginalOrderController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
