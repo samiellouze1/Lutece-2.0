@@ -1,3 +1,5 @@
+using Hangfire;
+using Hangfire.MemoryStorage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using ProbabilityService.AsyncDataServices;
@@ -5,11 +7,19 @@ using ProbabilityService.Data;
 using ProbabilityService.EventProcessing;
 using ProbabilityService.Repo.IRepo;
 using ProbabilityService.Repo.Repo;
+using ProbabilityService.SyncDataServices.Http;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddHangfire(configuration => configuration
+.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+.UseSimpleAssemblyNameTypeSerializer()
+.UseRecommendedSerializerSettings()
+.UseMemoryStorage());
+
+builder.Services.AddHangfireServer();
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
@@ -34,6 +44,8 @@ builder.Services.AddScoped<IStockRepo, StockRepo>();
 builder.Services.AddScoped<IProbabilityDistributionRepo, ProbabilityDistributionUnitRepo>();
 builder.Services.AddScoped<IStockTraceRepo, StockTraceRepo>();
 #endregion
+
+builder.Services.AddHttpClient<IHttpProbabilityDataClient, HttpProbabilityDataClient>();
 
 
 var app = builder.Build();
