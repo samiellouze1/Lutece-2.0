@@ -24,3 +24,11 @@ spec:
                 name: simulator-clusterip-srv
                 port:
                   number: 80
+          - path: /api/probability
+            pathType: Prefix
+            backend:
+              service:
+                name: probability-clusterip-srv
+                port: 
+                  number:80
+#metallb for load balancing

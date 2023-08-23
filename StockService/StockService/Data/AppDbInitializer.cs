@@ -1,10 +1,7 @@
-﻿using JetBrains.Annotations;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StockService.Data.Enums;
 using StockService.Models;
-using System.Diagnostics.Metrics;
-using System.Runtime.Intrinsics.X86;
 
 namespace StockService.Data
 {

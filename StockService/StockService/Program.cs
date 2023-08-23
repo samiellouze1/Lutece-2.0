@@ -26,7 +26,7 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-#region 
+#region messsagebus
 builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
 #endregion
 

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: probability-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: probabilityservice
+  template:
+    metadata:
+      labels:
+        app: probabilityservice
+    spec:
+      containers:
+        - name: probabilityservice
+          image: samilxvi/probabilityservice:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: probability-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: probabilityservice
+  ports:
+  - name: probabilityservice
+    protocol: TCP
+    port: 80
+    targetPort: 80
