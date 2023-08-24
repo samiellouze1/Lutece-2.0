@@ -15,5 +15,6 @@ namespace RecommandationService.Models
         [Required]
         public int OriginalQuantity { get; set; }
         public virtual List<BuyingOriginalOrderStock> BuyingOriginalOrderStocks { get; set; }
+        public virtual RecommandationResponse RecommandationResponse { get; set; }
     }
 }
