@@ -1,5 +1,6 @@
 using Hangfire;
 using Hangfire.MemoryStorage;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using ProbabilityService.AsyncDataServices;
@@ -7,6 +8,7 @@ using ProbabilityService.Data;
 using ProbabilityService.EventProcessing;
 using ProbabilityService.Repo.IRepo;
 using ProbabilityService.Repo.Repo;
+using ProbabilityService.SyncDataServices.Grpc;
 using ProbabilityService.SyncDataServices.Http;
 using System.Text.Json.Serialization;
 
@@ -45,6 +47,12 @@ builder.Services.AddScoped<IProbabilityDistributionRepo, ProbabilityDistribution
 builder.Services.AddScoped<IStockTraceRepo, StockTraceRepo>();
 #endregion
 
+builder.Services.AddGrpc();
+
+#region automapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+#endregion
+
 builder.Services.AddHttpClient<IHttpProbabilityDataClient, HttpProbabilityDataClient>();
 
 
@@ -62,4 +70,20 @@ app.UseAuthorization();
 
 app.MapControllers();
 AppDbInitializer.Seed(app);
+app.MapGrpcService<GrpcProbabilityDistributionService>();
+
+app.MapGet("/protos/ProbabilityDistributions.proto", async context =>
+{
+    await context.Response.WriteAsync(File.ReadAllText("Protos/ProbabilityDistributions.proto.proto"));
+});
+
+if (app.Environment.IsProduction())
+{
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        // Setup a HTTP/2 endpoint without TLS.
+        options.ListenLocalhost(666, o => o.Protocols =
+            HttpProtocols.Http2);
+    });
+}
 app.Run();
