@@ -55,8 +55,16 @@ namespace StockService.Controllers
             //mapping
             var originalorderModel = _mapper.Map<OriginalOrder>(ordercreatedto);
 
+            string userId;
             // Get the current user
-            var userId = User.FindFirst("Id").Value;
+            try
+            {
+                userId = User.FindFirst("Id").Value;
+            }
+            catch
+            {
+                return BadRequest("you haven't logged in");
+            }
             var user = await _userManager.FindByIdAsync(userId);
 
             //adding the original order to db
