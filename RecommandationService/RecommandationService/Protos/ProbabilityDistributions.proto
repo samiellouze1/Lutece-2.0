@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option csharp_namespace = "ProbabilityService";
+
+message GetAllRequest {}
+
+message GrpcProbabilityDistributionModel{
+	int32 Id = 1;
+	double price = 2;
+	double probability = 3;
+	double StockId = 4;
+}
