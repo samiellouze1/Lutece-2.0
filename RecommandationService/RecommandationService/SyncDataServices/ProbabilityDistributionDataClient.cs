@@ -22,8 +22,8 @@ namespace RecommandationService.SyncDataServices
             var request = new GetAllRequest();
             try
             {
-                var reply = client.GetALlPlatforms(request);
-                return _mapper.Map<IEnumerable<ProbabilityDistributionUnit>>(reply.Platform);
+                var reply = client.GetAllProbabilityDistributions(request);
+                return _mapper.Map<IEnumerable<ProbabilityDistributionUnit>>(reply.Probabilitydistribution);
             }
             catch (Exception ex)
             {
