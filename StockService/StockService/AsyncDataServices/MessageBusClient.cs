@@ -14,6 +14,7 @@ namespace StockService.AsyncDataServices
         {
             _config = config;
             var factory = new ConnectionFactory() { HostName = _config["RabbitMQHost"], Port = int.Parse(_config["RabbitMQPort"]) };
+            Console.WriteLine(_config["RabbitMQHost"]);
             try
             {
                 _connection = factory.CreateConnection();

@@ -30,5 +30,4 @@ spec:
               service:
                 name: probability-clusterip-srv
                 port: 
-                  number:80
-#metallb for load balancing
+                  number: 80
